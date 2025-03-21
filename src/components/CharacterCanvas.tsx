@@ -1,81 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Vampire } from "../vampire/Vampire";
+import { tileConfig } from "../constants";
 
-interface TileConfig {
-  tileSize: number;
-  mapWidth: number;
-  mapHeight: number;
+interface Props {
+  path: { x: number; y: number }[];
 }
 
-export const CanvasMap = () => {
-  const mapCanvasRef = useRef<HTMLCanvasElement>(null);
+export const CharacterCanvas = ({ path }: Props) => {
   const charCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [mapGrid, setMapGrid] = useState<number[][]>([]);
-  const [path, setPath] = useState<{ x: number; y: number }[]>([]);
-
-  const tileConfig: TileConfig = {
-    tileSize: 70,
-    mapWidth: 12,
-    mapHeight: 12,
-  };
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = "/map.png";
-    img.onload = () => {
-      const ctx = mapCanvasRef.current?.getContext("2d");
-      if (!ctx) return;
-
-      // ✅ Draw the full map image
-      ctx.drawImage(
-        img,
-        0,
-        0,
-        tileConfig.mapWidth * tileConfig.tileSize,
-        tileConfig.mapHeight * tileConfig.tileSize
-      );
-
-      // ✅ Parse the map
-      const parsedMap: number[][] = [];
-      for (let y = 0; y < tileConfig.mapHeight; y++) {
-        const row: number[] = [];
-        for (let x = 0; x < tileConfig.mapWidth; x++) {
-          // Sample center pixel of the tile
-          const pixelX = x * tileConfig.tileSize + tileConfig.tileSize / 2;
-          const pixelY = y * tileConfig.tileSize + tileConfig.tileSize / 2;
-
-          const pixelData = ctx.getImageData(pixelX, pixelY, 1, 1).data;
-          const [r] = pixelData;
-
-          // Simple color check logic - adjust thresholds as needed
-          if (r < 100) {
-            row.push(1);
-          } else {
-            row.push(0);
-          }
-        }
-        parsedMap.push(row);
-      }
-
-      setMapGrid(parsedMap);
-    };
-  }, [tileConfig.mapHeight, tileConfig.mapWidth, tileConfig.tileSize]);
-
-  useEffect(() => {
-    if (!mapGrid.length) return;
-
-    // ✅ Find the path for monsters
-    const path = [];
-    for (let y = 0; y < mapGrid.length; y++) {
-      for (let x = 0; x < mapGrid[y].length; x++) {
-        if (mapGrid[y][x] === 1) {
-          path.push({ x, y });
-        }
-      }
-    }
-
-    setPath(path);
-  }, [mapGrid]);
 
   useEffect(() => {
     const canvas = charCanvasRef.current;
@@ -121,7 +53,7 @@ export const CanvasMap = () => {
 
         // Determine which row of the sprite sheet to use based on movement direction
         // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
-        const currentSprite = vampire.getCurrentSprite(
+        const currentSpriteVariant = vampire.getCurrentSpriteVariant(
           nextPosition,
           currentPosition
         );
@@ -144,9 +76,9 @@ export const CanvasMap = () => {
         // - SPRITE_WIDTH/HEIGHT: size of one frame in the sprite sheet
         // - posX/posY: where to draw on the canvas
         ctx.drawImage(
-          vampire.sprite,
+          vampire.sprite, // sprite sheet
           currentSpriteFrame * vampire.SPRITE_WIDTH,
-          currentSprite * vampire.SPRITE_HEIGHT,
+          currentSpriteVariant * vampire.SPRITE_HEIGHT,
           vampire.SPRITE_WIDTH,
           vampire.SPRITE_HEIGHT,
           posX,
@@ -176,22 +108,14 @@ export const CanvasMap = () => {
 
       animate();
     };
-  }, [path, tileConfig.tileSize]);
+  }, [path]);
 
   return (
-    <div style={{ position: "relative" }}>
-      <canvas
-        ref={mapCanvasRef}
-        width={tileConfig.mapWidth * tileConfig.tileSize}
-        height={tileConfig.mapHeight * tileConfig.tileSize}
-        style={{ border: "1px solid black" }}
-      />
-      <canvas
-        ref={charCanvasRef}
-        width={tileConfig.mapWidth * tileConfig.tileSize}
-        height={tileConfig.mapHeight * tileConfig.tileSize}
-        style={{ position: "absolute", top: 0, left: 0 }}
-      />
-    </div>
+    <canvas
+      ref={charCanvasRef}
+      width={tileConfig.mapWidth * tileConfig.tileSize}
+      height={tileConfig.mapHeight * tileConfig.tileSize}
+      style={{ position: "absolute", top: 0, left: 0 }}
+    />
   );
 };

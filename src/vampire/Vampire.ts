@@ -22,7 +22,7 @@ export class Vampire {
     this.sprite.src = "/Vampires1_Walk_full.png";
   }
 
-  getCurrentSprite(nextPosition: Position, currentPosition: Position) {
+  getCurrentSpriteVariant(nextPosition: Position, currentPosition: Position) {
     switch (true) {
       // Go right
       case nextPosition.x > currentPosition.x:
