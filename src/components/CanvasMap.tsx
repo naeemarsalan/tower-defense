@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Vampire } from "../vampire/Vampire";
 
 interface TileConfig {
   tileSize: number;
@@ -24,6 +25,7 @@ export const CanvasMap = () => {
     img.onload = () => {
       const ctx = mapCanvasRef.current?.getContext("2d");
       if (!ctx) return;
+
       // ✅ Draw the full map image
       ctx.drawImage(
         img,
@@ -33,8 +35,8 @@ export const CanvasMap = () => {
         tileConfig.mapHeight * tileConfig.tileSize
       );
 
+      // ✅ Parse the map
       const parsedMap: number[][] = [];
-
       for (let y = 0; y < tileConfig.mapHeight; y++) {
         const row: number[] = [];
         for (let x = 0; x < tileConfig.mapWidth; x++) {
@@ -62,8 +64,8 @@ export const CanvasMap = () => {
   useEffect(() => {
     if (!mapGrid.length) return;
 
+    // ✅ Find the path for monsters
     const path = [];
-
     for (let y = 0; y < mapGrid.length; y++) {
       for (let x = 0; x < mapGrid[y].length; x++) {
         if (mapGrid[y][x] === 1) {
@@ -76,81 +78,99 @@ export const CanvasMap = () => {
   }, [mapGrid]);
 
   useEffect(() => {
-    const frameWidth = 64; // Adjust to your sprite's frame size
-    const frameHeight = 64;
-    const totalFrames = 6; // Example: 6 frames per walk cycle
-
     const canvas = charCanvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const sprite = new Image();
-    sprite.src = "/Vampires1_Walk_full.png";
+    // ✅ Animate the vampire
+    let currentSpriteFrame = 0;
 
-    let frame = 0;
-    let pathIndex = 0;
+    // ✅ Start outside the map
+    let pathIndex = -1;
     const fps = 16;
     const frameInterval = 1000 / fps;
 
-    sprite.onload = () => {
-      let progress = 0; // Track progress between tiles (0-1)
-      const moveSpeed = 0.05; // Adjust for faster/slower movement
+    const vampire = new Vampire();
+    vampire.sprite.onload = () => {
+      // Progress represents how far we've moved between current tile and next tile (0 = at current tile, 1 = at next tile)
+      let progress = 0;
+      // How fast the vampire moves between tiles (0.05 = 5% of the distance per frame)
+      const moveSpeed = 0.05;
 
       const animate = () => {
+        if (path.length === 0) return;
+
+        // Clear previous frame to prevent ghost images
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const currentPosition = path[pathIndex];
-        const nextPosition = path[Math.min(pathIndex + 1, path.length - 1)];
+        // Get current tile position and next tile position from the path
+        const currentPosition =
+          pathIndex === -1
+            ? { x: path[0].x, y: path[0].y - 1 }
+            : path[pathIndex];
 
+        const nextPosition =
+          pathIndex === path.length - 1
+            ? { x: path[pathIndex].x, y: path[pathIndex].y + 1 }
+            : path[Math.min(pathIndex + 1, path.length)];
+
+        // Safety check - stop animation if we don't have valid positions
         if (!currentPosition || !nextPosition) return;
 
-        // Determine sprite row based on movement direction
-        let spriteRow = 0; // Default face down
-        if (nextPosition.x > currentPosition.x) {
-          spriteRow = 3; // Face right
-        } else if (nextPosition.x < currentPosition.x) {
-          spriteRow = 2; // Face left
-        } else if (nextPosition.y > currentPosition.y) {
-          spriteRow = 0; // Face down
-        } else if (nextPosition.y < currentPosition.y) {
-          spriteRow = 1; // Face up
-        }
+        // Determine which row of the sprite sheet to use based on movement direction
+        // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
+        const currentSprite = vampire.getCurrentSprite(
+          nextPosition,
+          currentPosition
+        );
 
-        // Interpolate between current and next tile positions
+        // Calculate smooth position between tiles using linear interpolation (lerp)
+        // progress = 0 -> vampire is at currentPosition
+        // progress = 1 -> vampire is at nextPosition
+        // progress between 0-1 -> vampire is between positions
         const posX =
           (currentPosition.x * (1 - progress) + nextPosition.x * progress) *
           tileConfig.tileSize;
+
         const posY =
           (currentPosition.y * (1 - progress) + nextPosition.y * progress) *
           tileConfig.tileSize;
 
-        // Draw current vampire frame with correct direction
+        // Draw the vampire sprite:
+        // - frame * SPRITE_WIDTH: selects which column (animation frame) from sprite sheet
+        // - currentSprite * SPRITE_HEIGHT: selects which row (direction) from sprite sheet
+        // - SPRITE_WIDTH/HEIGHT: size of one frame in the sprite sheet
+        // - posX/posY: where to draw on the canvas
         ctx.drawImage(
-          sprite,
-          frame * frameWidth,
-          spriteRow * frameHeight, // Use spriteRow to select correct animation row
-          frameWidth,
-          frameHeight,
+          vampire.sprite,
+          currentSpriteFrame * vampire.SPRITE_WIDTH,
+          currentSprite * vampire.SPRITE_HEIGHT,
+          vampire.SPRITE_WIDTH,
+          vampire.SPRITE_HEIGHT,
           posX,
           posY,
-          frameWidth,
-          frameHeight
+          vampire.SPRITE_WIDTH,
+          vampire.SPRITE_HEIGHT
         );
 
-        // Update animation frame
-        frame = (frame + 1) % totalFrames;
+        // Move to next frame in the walking animation
+        // Cycles through frames 0 to TOTAL_FRAMES-1
+        currentSpriteFrame = (currentSpriteFrame + 1) % vampire.TOTAL_FRAMES;
 
-        // Update position progress
+        // Move vampire closer to next tile
         progress += moveSpeed;
 
-        // Move to next path tile when reaching destination
+        // When we reach the next tile (progress >= 1)
+        // Reset progress and move to next tile in path
         if (progress >= 1) {
           progress = 0;
-          pathIndex = Math.min(pathIndex + 1, path.length - 1);
+          pathIndex = Math.min(pathIndex + 1, path.length);
         }
 
+        // Schedule next animation frame
+        // frameInterval = 1000/fps to maintain consistent animation speed
         setTimeout(animate, frameInterval);
       };
 
