@@ -91,38 +91,65 @@ export const CanvasMap = () => {
 
     let frame = 0;
     let pathIndex = 0;
-    const fps = 8;
+    const fps = 16;
     const frameInterval = 1000 / fps;
 
     sprite.onload = () => {
+      let progress = 0; // Track progress between tiles (0-1)
+      const moveSpeed = 0.05; // Adjust for faster/slower movement
+
       const animate = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const position = path[pathIndex];
-        if (!position) return;
+        const currentPosition = path[pathIndex];
+        const nextPosition = path[Math.min(pathIndex + 1, path.length - 1)];
 
-        // Calculate screen position based on tile size
-        const posX = position.x * tileConfig.tileSize;
-        const posY = position.y * tileConfig.tileSize;
+        if (!currentPosition || !nextPosition) return;
 
-        // Draw current vampire frame
+        // Determine sprite row based on movement direction
+        let spriteRow = 0; // Default face down
+        if (nextPosition.x > currentPosition.x) {
+          spriteRow = 3; // Face right
+        } else if (nextPosition.x < currentPosition.x) {
+          spriteRow = 2; // Face left
+        } else if (nextPosition.y > currentPosition.y) {
+          spriteRow = 0; // Face down
+        } else if (nextPosition.y < currentPosition.y) {
+          spriteRow = 1; // Face up
+        }
+
+        // Interpolate between current and next tile positions
+        const posX =
+          (currentPosition.x * (1 - progress) + nextPosition.x * progress) *
+          tileConfig.tileSize;
+        const posY =
+          (currentPosition.y * (1 - progress) + nextPosition.y * progress) *
+          tileConfig.tileSize;
+
+        // Draw current vampire frame with correct direction
         ctx.drawImage(
           sprite,
           frame * frameWidth,
-          0, // Source X, Y in the sprite sheet
+          spriteRow * frameHeight, // Use spriteRow to select correct animation row
           frameWidth,
-          frameHeight, // Frame size
+          frameHeight,
           posX,
-          posY, // Destination position
+          posY,
           frameWidth,
-          frameHeight // Draw size
+          frameHeight
         );
 
         // Update animation frame
         frame = (frame + 1) % totalFrames;
 
-        // Move to next path tile after each full animation cycle
-        if (frame === 0) pathIndex = Math.min(pathIndex + 1, path.length - 1);
+        // Update position progress
+        progress += moveSpeed;
+
+        // Move to next path tile when reaching destination
+        if (progress >= 1) {
+          progress = 0;
+          pathIndex = Math.min(pathIndex + 1, path.length - 1);
+        }
 
         setTimeout(animate, frameInterval);
       };
