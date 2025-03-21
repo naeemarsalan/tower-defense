@@ -1,30 +1,34 @@
 import { useEffect, useRef } from "react";
 import { Vampire } from "../vampire/Vampire";
 import { tileConfig } from "../constants";
+import { Position } from "../types";
 
 interface Props {
-  path: { x: number; y: number }[];
+  path: Position[];
 }
 
 export const CharacterCanvas = ({ path }: Props) => {
   const charCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!path.length) return;
+
     const canvas = charCanvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // ✅ Animate the vampire
-    let currentSpriteFrame = 0;
-
     // ✅ Start outside the map
     let pathIndex = -1;
     const fps = 16;
     const frameInterval = 1000 / fps;
 
-    const vampire = new Vampire();
+    const initialPosition =
+      pathIndex === -1 ? { x: path[0].x, y: path[0].y - 1 } : path[pathIndex];
+
+    const vampire = new Vampire(initialPosition);
+
     vampire.sprite.onload = () => {
       // Progress represents how far we've moved between current tile and next tile (0 = at current tile, 1 = at next tile)
       let progress = 0;
@@ -32,16 +36,8 @@ export const CharacterCanvas = ({ path }: Props) => {
       const moveSpeed = 0.05;
 
       const animate = () => {
-        if (path.length === 0) return;
-
         // Clear previous frame to prevent ghost images
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Get current tile position and next tile position from the path
-        const currentPosition =
-          pathIndex === -1
-            ? { x: path[0].x, y: path[0].y - 1 }
-            : path[pathIndex];
 
         const nextPosition =
           pathIndex === path.length - 1
@@ -49,47 +45,9 @@ export const CharacterCanvas = ({ path }: Props) => {
             : path[Math.min(pathIndex + 1, path.length)];
 
         // Safety check - stop animation if we don't have valid positions
-        if (!currentPosition || !nextPosition) return;
+        if (!nextPosition) return;
 
-        // Determine which row of the sprite sheet to use based on movement direction
-        // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
-        const currentSpriteVariant = vampire.getCurrentSpriteVariant(
-          nextPosition,
-          currentPosition
-        );
-
-        // Calculate smooth position between tiles using linear interpolation (lerp)
-        // progress = 0 -> vampire is at currentPosition
-        // progress = 1 -> vampire is at nextPosition
-        // progress between 0-1 -> vampire is between positions
-        const posX =
-          (currentPosition.x * (1 - progress) + nextPosition.x * progress) *
-          tileConfig.tileSize;
-
-        const posY =
-          (currentPosition.y * (1 - progress) + nextPosition.y * progress) *
-          tileConfig.tileSize;
-
-        // Draw the vampire sprite:
-        // - frame * SPRITE_WIDTH: selects which column (animation frame) from sprite sheet
-        // - currentSprite * SPRITE_HEIGHT: selects which row (direction) from sprite sheet
-        // - SPRITE_WIDTH/HEIGHT: size of one frame in the sprite sheet
-        // - posX/posY: where to draw on the canvas
-        ctx.drawImage(
-          vampire.sprite, // sprite sheet
-          currentSpriteFrame * vampire.SPRITE_WIDTH,
-          currentSpriteVariant * vampire.SPRITE_HEIGHT,
-          vampire.SPRITE_WIDTH,
-          vampire.SPRITE_HEIGHT,
-          posX,
-          posY,
-          vampire.SPRITE_WIDTH,
-          vampire.SPRITE_HEIGHT
-        );
-
-        // Move to next frame in the walking animation
-        // Cycles through frames 0 to TOTAL_FRAMES-1
-        currentSpriteFrame = (currentSpriteFrame + 1) % vampire.TOTAL_FRAMES;
+        vampire.draw(ctx, nextPosition, progress);
 
         // Move vampire closer to next tile
         progress += moveSpeed;
@@ -99,6 +57,7 @@ export const CharacterCanvas = ({ path }: Props) => {
         if (progress >= 1) {
           progress = 0;
           pathIndex = Math.min(pathIndex + 1, path.length);
+          vampire.updatePosition(path[pathIndex]);
         }
 
         // Schedule next animation frame
