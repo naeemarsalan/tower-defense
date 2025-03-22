@@ -1,65 +1,39 @@
 import { tileConfig } from "../constants";
-import { Position } from "../types";
+import { Sprite } from "../sprite/Sprite";
+import { Monster, Position } from "../types";
 
-enum BodyPosition {
-  DOWN = 0,
-  UP = 1,
-  LEFT = 2,
-  RIGHT = 3,
-}
+export class Vampire extends Sprite implements Monster {
+  public spriteFrame = 0; // Start with down direction
+  public pathIndex = -1; // Start outside the map
+  public ready = false;
 
-class Sprite {
-  public readonly SPRITE_WIDTH = 64;
-  public readonly SPRITE_HEIGHT = 64;
-  public readonly TOTAL_FRAMES = 6;
-
-  public sprite: HTMLImageElement;
-
-  constructor() {
-    this.sprite = new Image();
-  }
-
-  protected getCurrentSpriteVariant(
-    nextPosition: Position,
-    currentPosition: Position
-  ) {
-    switch (true) {
-      // Go right
-      case nextPosition.x > currentPosition.x:
-        return BodyPosition.RIGHT;
-      // Go left
-      case nextPosition.x < currentPosition.x:
-        return BodyPosition.LEFT;
-      // Go up
-      case nextPosition.y < currentPosition.y:
-        return BodyPosition.UP;
-      // Go down
-      case nextPosition.y > currentPosition.y:
-        return BodyPosition.DOWN;
-      default:
-        throw new Error("Invalid body position");
-    }
-  }
-}
-
-export class Vampire extends Sprite {
+  public id: string;
+  public position: Position;
   public health = 100;
-  public currentSpriteFrame = 0; // Start with down direction
+  public speed = 0.05;
+  public tileProgress = 0; // Progress between tiles (0 = at current tile, 1 = at next tile)
 
-  constructor(public position: Position) {
+  constructor(public path: Position[]) {
     super();
+    this.id = `vampire-${Date.now()}`;
     this.sprite.src = "/Vampires1_Walk_full.png";
+    this.position = { x: path[0].x, y: path[0].y - 1 }; // Start outside the map
+
+    this.sprite.onload = () => {
+      this.ready = true;
+    };
   }
 
-  updatePosition(newPosition: Position) {
-    this.position = newPosition;
-  }
+  public draw(ctx: CanvasRenderingContext2D) {
+    if (!this.ready) return;
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    nextPosition: Position,
-    progress: number
-  ) {
+    const nextPosition =
+      this.pathIndex === this.path.length - 1
+        ? { x: this.path[this.pathIndex].x, y: this.path[this.pathIndex].y + 1 }
+        : this.path[Math.min(this.pathIndex + 1, this.path.length)];
+
+    if (!nextPosition) return;
+
     // Determine which row of the sprite sheet to use based on movement direction
     // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
     const currentSpriteVariant = this.getCurrentSpriteVariant(
@@ -72,11 +46,13 @@ export class Vampire extends Sprite {
     // progress = 1 -> vampire is at nextPosition
     // progress between 0-1 -> vampire is between positions
     const posX =
-      (this.position.x * (1 - progress) + nextPosition.x * progress) *
+      (this.position.x * (1 - this.tileProgress) +
+        nextPosition.x * this.tileProgress) *
       tileConfig.tileSize;
 
     const posY =
-      (this.position.y * (1 - progress) + nextPosition.y * progress) *
+      (this.position.y * (1 - this.tileProgress) +
+        nextPosition.y * this.tileProgress) *
       tileConfig.tileSize;
 
     // Draw the vampire sprite:
@@ -86,7 +62,7 @@ export class Vampire extends Sprite {
     // - posX/posY: where to draw on the canvas
     ctx.drawImage(
       this.sprite,
-      this.currentSpriteFrame * this.SPRITE_WIDTH,
+      this.spriteFrame * this.SPRITE_WIDTH,
       currentSpriteVariant * this.SPRITE_HEIGHT,
       this.SPRITE_WIDTH,
       this.SPRITE_HEIGHT,
@@ -97,6 +73,17 @@ export class Vampire extends Sprite {
     );
 
     // Move to next frame in the walking animation
-    this.currentSpriteFrame = (this.currentSpriteFrame + 1) % this.TOTAL_FRAMES;
+    this.spriteFrame = (this.spriteFrame + 1) % this.TOTAL_FRAMES;
+
+    // Move vampire closer to next tile
+    this.tileProgress += this.speed;
+
+    // When we reach the next tile (progress >= 1)
+    // Reset progress and move to next tile in path
+    if (this.tileProgress >= 1) {
+      this.tileProgress = 0;
+      this.pathIndex = Math.min(this.pathIndex + 1, this.path.length);
+      this.position = this.path[this.pathIndex];
+    }
   }
 }
