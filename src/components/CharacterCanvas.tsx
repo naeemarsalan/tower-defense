@@ -19,23 +19,17 @@ export const CharacterCanvas = ({ path }: Props) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const fps = 16;
-    const frameInterval = 1000 / fps;
-
     const game = new Game(path);
 
-    const animate = () => {
-      // Clear previous frame to prevent ghost images
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      game.tick(ctx);
-
-      // Schedule next animation frame
-      // frameInterval = 1000/fps to maintain consistent animation speed
-      setTimeout(animate, frameInterval);
-    };
-
-    animate();
+    (() => {
+      function main() {
+        setTimeout(() => {
+          window.requestAnimationFrame(main);
+          game.tick(ctx);
+        }, 1000 / game.FPS);
+      }
+      main(); // Start the cycle
+    })();
   }, [path]);
 
   return (

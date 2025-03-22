@@ -72,6 +72,9 @@ export class Vampire extends Sprite implements Monster {
       this.SPRITE_HEIGHT
     );
 
+    // Draw health bar
+    this.drawHealthBar(ctx, posX, posY);
+
     // Move to next frame in the walking animation
     this.spriteFrame = (this.spriteFrame + 1) % this.TOTAL_FRAMES;
 
@@ -85,5 +88,35 @@ export class Vampire extends Sprite implements Monster {
       this.pathIndex = Math.min(this.pathIndex + 1, this.path.length);
       this.position = this.path[this.pathIndex];
     }
+  }
+
+  private drawHealthBar(
+    ctx: CanvasRenderingContext2D,
+    posX: number,
+    posY: number
+  ) {
+    // Draw health bar
+    const healthBarWidth = this.SPRITE_WIDTH / 2;
+    const healthBarHeight = 6;
+    const healthBarY = posY + 5; // Position above the vampire's head
+    const healthBarX = posX + (this.SPRITE_WIDTH - healthBarWidth) / 2; // Center the health bar
+
+    // Draw health bar background (red)
+    ctx.fillStyle = "#ff0000";
+    ctx.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+
+    // Draw current health (green)
+    ctx.fillStyle = "#00ff00";
+    ctx.fillRect(
+      healthBarX,
+      healthBarY,
+      healthBarWidth * (this.health / 100),
+      healthBarHeight
+    );
+
+    // Draw health bar border
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
   }
 }

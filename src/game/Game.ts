@@ -6,6 +6,8 @@ export interface GameState {
 }
 
 export class Game {
+  public FPS = 16;
+
   private state: GameState;
   private path: Position[];
   private spawnInterval: number = 0; // Time between monster spawns in ms
@@ -23,7 +25,12 @@ export class Game {
     return { ...this.state };
   }
 
-  public tick(ctx: CanvasRenderingContext2D): void {
+  public tick(ctx: CanvasRenderingContext2D | null): void {
+    if (!ctx) return;
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
     // Spawn monsters
     const currentTime = performance.now();
     if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
