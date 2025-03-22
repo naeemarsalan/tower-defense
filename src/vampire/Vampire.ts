@@ -16,7 +16,7 @@ export class Vampire extends Sprite implements Monster {
   constructor(public path: Position[]) {
     super();
     this.id = `vampire-${Date.now()}`;
-    this.sprite.src = "/Vampires1_Walk_full.png";
+    this.sprite.src = "/vampire.png";
     this.position = { x: path[0].x, y: path[0].y - 1 }; // Start outside the map
 
     this.sprite.onload = () => {
