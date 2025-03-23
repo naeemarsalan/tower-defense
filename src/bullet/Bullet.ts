@@ -3,15 +3,16 @@ import { Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 
 export class Bullet extends Sprite {
-  public position: Position;
-  public target: Position;
-  public speed = 0.12;
-  public damage = 1;
   public ready = false;
+  public position: Position;
+  public target: Monster;
 
-  constructor(start: Position, target: Position) {
+  public speed = 0.2;
+  public damage = 10;
+
+  constructor(start: Position, target: Monster) {
     super();
-    this.position = { ...start };
+    this.position = start;
     this.target = target;
     this.sprite.src = "/bullet.png"; // You'll need to add a bullet sprite
     this.sprite.onload = () => {
@@ -21,8 +22,8 @@ export class Bullet extends Sprite {
 
   public update(): boolean {
     // Calculate direction vector
-    const dx = this.target.x - this.position.x;
-    const dy = this.target.y - this.position.y;
+    const dx = this.target.position.x - this.position.x;
+    const dy = this.target.position.y - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Normalize direction
@@ -34,24 +35,15 @@ export class Bullet extends Sprite {
     this.position.y += dirY * this.speed;
 
     // Check if bullet has reached target (within 0.1 tiles)
-    return distance > 0.1;
-  }
+    const hasReachedTarget = distance > 0.1;
+    if (!hasReachedTarget) return true;
 
-  public isBulletHittingMonster(monster: Monster): boolean {
-    if (!monster.position) return false;
-
-    const dx = this.position.x - monster.position.x;
-    const dy = this.position.y - monster.position.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // Consider a hit if within 0.3 tiles
-    return distance < 0.3;
+    this.target.health -= this.damage;
+    return false; // Remove the bullet
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
     if (!this.ready) return;
-
-    console.log(this.position);
 
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;

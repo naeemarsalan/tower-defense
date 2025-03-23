@@ -5,13 +5,14 @@ import { Monster } from "../types";
 import { Bullet } from "../bullet/Bullet";
 
 export class Tower extends Sprite {
-  public position: Position;
   public ready = false;
+  public position: Position;
   public range = 1.5;
-  public damage = 1;
+
   private lastAttackTime = 0;
-  private attackCooldown = 1000; // 0.1 second between attacks
-  private bullets: Bullet[] = [];
+  private attackCooldown = 1000; // 1 second between attacks
+
+  public bullets: Bullet[] = [];
 
   constructor(position: Position) {
     super();
@@ -23,47 +24,28 @@ export class Tower extends Sprite {
   }
 
   public isMonsterInRange(monster: Monster): boolean {
-    if (!monster.position?.x || !monster.position?.y) return false;
+    // Calculate Euclidean distance between tower and monster in tiles
+    const dx = this.position.x - monster.position.x;
+    const dy = this.position.y - monster.position.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Calculate Manhattan distance between tower and monster in tiles
-    const dx = Math.abs(this.position.x - monster.position.x);
-    const dy = Math.abs(this.position.y - monster.position.y);
-
-    // Check if monster is within range (using Manhattan distance)
-    return dx + dy <= this.range;
+    // Check if any part of the monster is within range
+    return distance <= this.range;
   }
 
   public attack(monster: Monster): void {
     const currentTime = performance.now();
     if (currentTime - this.lastAttackTime >= this.attackCooldown) {
-      // Create a new bullet starting from center of tower
-      const bulletStartPosition = {
-        x: this.position.x, // Center of tower
-        y: this.position.y + 0.25, // Center of tower
-      };
-      const bullet = new Bullet(bulletStartPosition, monster.position);
+      const bullet = new Bullet(
+        {
+          x: this.position.x,
+          y: this.position.y + 0.25,
+        },
+        monster
+      );
       this.bullets.push(bullet);
       this.lastAttackTime = currentTime;
     }
-  }
-
-  public updateBullets(monsters: Monster[]): void {
-    // Update all bullets
-    this.bullets = this.bullets.filter((bullet) => {
-      const isAlive = bullet.update();
-
-      // Check for collisions with monsters
-      if (isAlive) {
-        monsters.forEach((monster) => {
-          if (bullet.isBulletHittingMonster(monster)) {
-            monster.health -= bullet.damage;
-            return false; // Remove the bullet
-          }
-        });
-      }
-
-      return isAlive;
-    });
   }
 
   public draw(ctx: CanvasRenderingContext2D) {

@@ -12,8 +12,10 @@ export class Game {
 
   private state: GameState;
   private path: Position[];
+
   private spawnInterval: number = 0; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
+
   private MAX_MONSTERS = 200;
 
   constructor(path: Position[]) {
@@ -22,10 +24,6 @@ export class Game {
       monsters: [],
       towers: [],
     };
-  }
-
-  public getState(): GameState {
-    return { ...this.state };
   }
 
   public addTower(position: Position): void {
@@ -92,7 +90,12 @@ export class Game {
 
   private updateBullets(): void {
     this.state.towers.forEach((tower) => {
-      tower.updateBullets(this.state.monsters);
+      tower.bullets.forEach((bullet) => {
+        const isAlive = bullet.update();
+        if (!isAlive) {
+          tower.bullets = tower.bullets.filter((b) => b !== bullet);
+        }
+      });
     });
   }
 
