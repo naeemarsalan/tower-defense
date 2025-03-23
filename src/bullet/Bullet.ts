@@ -7,7 +7,7 @@ export class Bullet extends Sprite {
   public position: Position;
   public target: Monster;
   public speed = 0.1;
-  public damage = 5;
+  public damage = 100;
 
   constructor(start: Position, target: Monster) {
     super();

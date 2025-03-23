@@ -1,6 +1,7 @@
 import { Monster, Position } from "../types";
 import { Vampire } from "../vampire/Vampire";
 import { Tower } from "../tower/Tower";
+import { Explosion } from "../effects/Explosion";
 
 export interface GameState {
   monsters: Monster[];
@@ -12,9 +13,9 @@ export class Game {
 
   private state: GameState;
   private path: Position[];
+  private explosions: Explosion[] = [];
 
-  // Time between monster spawns in ms
-  private spawnInterval: number = 2000;
+  private spawnInterval: number = 2000; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
 
   private MAX_MONSTERS = 1;
@@ -43,6 +44,9 @@ export class Game {
 
     // Draw monsters
     this.drawMonsters(ctx);
+
+    // Update and draw explosions
+    this.drawExplosions(ctx);
 
     // Draw towers
     this.drawTowers(ctx);
@@ -82,8 +86,8 @@ export class Game {
   private updateBullets(): void {
     this.state.towers.forEach((tower) => {
       tower.bullets.forEach((bullet) => {
-        const isActive = bullet.update();
-        if (!isActive) {
+        const isAlive = bullet.update();
+        if (!isAlive) {
           tower.bullets = tower.bullets.filter((b) => b !== bullet);
         }
       });
@@ -98,15 +102,30 @@ export class Game {
 
   private drawMonsters(ctx: CanvasRenderingContext2D): void {
     // Remove dead monsters
-    this.state.monsters = this.state.monsters.filter(
-      (monster) => monster.health > 0
-    );
+    this.state.monsters = this.state.monsters.filter((monster) => {
+      if (monster.health > 0) {
+        return true;
+      }
+      this.explosions.push(new Explosion(monster.position));
+      return false;
+    });
 
     this.state.monsters.forEach((monster) => {
       const hasReachedEnd = monster.draw(ctx);
       if (hasReachedEnd) {
         this.state.monsters = this.state.monsters.filter((m) => m !== monster);
       }
+    });
+  }
+
+  private drawExplosions(ctx: CanvasRenderingContext2D) {
+    // Update and draw explosions
+    this.explosions = this.explosions.filter((explosion) => {
+      const isRunning = explosion.update();
+      if (isRunning) {
+        explosion.draw(ctx);
+      }
+      return isRunning;
     });
   }
 }
