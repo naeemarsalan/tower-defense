@@ -10,7 +10,7 @@ export class Tower extends Sprite {
   public range = 1.5;
 
   private lastAttackTime = 0;
-  private attackCooldown = 2000; // 1 second between attacks
+  private attackCooldown = 2000; // 2 second between attacks
 
   public bullets: Bullet[] = [];
 
@@ -38,13 +38,7 @@ export class Tower extends Sprite {
   public attack(monster: Monster): void {
     const currentTime = performance.now();
     if (currentTime - this.lastAttackTime >= this.attackCooldown) {
-      const bullet = new Bullet(
-        {
-          x: this.position.x,
-          y: this.position.y + 0.25,
-        },
-        monster
-      );
+      const bullet = new Bullet({ ...this.position }, monster);
       this.bullets.push(bullet);
       this.lastAttackTime = currentTime;
     }

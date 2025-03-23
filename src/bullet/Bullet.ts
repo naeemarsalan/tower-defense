@@ -21,7 +21,6 @@ export class Bullet extends Sprite {
   }
 
   public update(): boolean {
-    // Calculate direction vector
     const dx = this.target.position.x - this.position.x;
     const dy = this.target.position.y - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -35,7 +34,7 @@ export class Bullet extends Sprite {
     this.position.y += dirY * this.speed;
 
     // Check if bullet has reached target (within 0.1 tiles)
-    const hasReachedTarget = distance <= 0.4;
+    const hasReachedTarget = distance <= 0.1;
     if (!hasReachedTarget) return true;
 
     this.target.health -= this.damage;

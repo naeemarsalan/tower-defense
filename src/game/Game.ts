@@ -16,7 +16,7 @@ export class Game {
   private spawnInterval: number = 0; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
 
-  private MAX_MONSTERS = 200;
+  private MAX_MONSTERS = 1;
 
   constructor(path: Position[]) {
     this.path = path;
