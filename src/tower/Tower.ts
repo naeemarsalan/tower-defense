@@ -7,7 +7,7 @@ import { Bullet } from "../bullet/Bullet";
 export class Tower extends Sprite {
   public ready = false;
   public position: Position;
-  public range = 1.5;
+  public range = 1.5; // in tiles
 
   private lastAttackTime = 0;
   private attackCooldown = 2000; // 2 second between attacks
@@ -56,7 +56,6 @@ export class Tower extends Sprite {
     const dx = this.position.x - getMonsterXPosition();
     const dy = this.position.y - getMonsterYPosition();
     const distance = Math.sqrt(dx * dx + dy * dy);
-    console.log(distance);
 
     // Check if any part of the monster is within range
     return distance <= this.range;

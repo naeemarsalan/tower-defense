@@ -8,12 +8,13 @@ export interface GameState {
 }
 
 export class Game {
-  public FPS = 10;
+  public FPS = 16;
 
   private state: GameState;
   private path: Position[];
 
-  private spawnInterval: number = 0; // Time between monster spawns in ms
+  // Time between monster spawns in ms
+  private spawnInterval: number = 2000;
   private lastSpawnTime: number = 0;
 
   private MAX_MONSTERS = 1;
@@ -59,7 +60,6 @@ export class Game {
       if (this.state.monsters.length < this.MAX_MONSTERS) {
         this.spawnVampire();
       }
-      this.spawnInterval = 2000;
       this.lastSpawnTime = currentTime;
     }
   }
@@ -82,8 +82,8 @@ export class Game {
   private updateBullets(): void {
     this.state.towers.forEach((tower) => {
       tower.bullets.forEach((bullet) => {
-        const isAlive = bullet.update();
-        if (!isAlive) {
+        const isActive = bullet.update();
+        if (!isActive) {
           tower.bullets = tower.bullets.filter((b) => b !== bullet);
         }
       });
