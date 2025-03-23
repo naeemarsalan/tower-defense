@@ -29,13 +29,14 @@ export class Vampire extends Sprite implements Monster {
   }
 
   public draw(ctx: CanvasRenderingContext2D) {
-    if (!this.ready) return;
+    if (!this.ready) return false;
 
     if (
       this.nextPosition?.x === undefined ||
       this.nextPosition?.y === undefined
-    )
-      return;
+    ) {
+      return true;
+    }
 
     // Determine which row of the sprite sheet to use based on movement direction
     // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
@@ -98,6 +99,8 @@ export class Vampire extends Sprite implements Monster {
             }
           : this.path[Math.min(this.pathIndex + 1, this.path.length)];
     }
+
+    return false;
   }
 
   private drawHealthBar(

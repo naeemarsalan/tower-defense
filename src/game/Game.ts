@@ -43,14 +43,14 @@ export class Game {
     // Draw monsters
     this.drawMonsters(ctx);
 
-    // Update bullets
-    this.updateBullets();
-
     // Draw towers
     this.drawTowers(ctx);
 
     // Handle tower attacks
     this.handleTowerAttacks();
+
+    // Update bullets
+    this.updateBullets();
   }
 
   private spawnMonsters(): void {
@@ -103,7 +103,10 @@ export class Game {
     );
 
     this.state.monsters.forEach((monster) => {
-      monster.draw(ctx);
+      const hasReachedEnd = monster.draw(ctx);
+      if (hasReachedEnd) {
+        this.state.monsters = this.state.monsters.filter((m) => m !== monster);
+      }
     });
   }
 }

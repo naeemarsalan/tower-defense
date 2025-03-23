@@ -30,11 +30,15 @@ export class Bullet extends Sprite {
 
     const getTargetPositionX = () => {
       if (isMonsterMovingRight) {
-        return this.target.position.x + this.target.tileProgress;
+        return (
+          this.target.position.x + this.target.tileProgress + this.target.speed
+        );
       }
 
       if (isMonsterMovingLeft) {
-        return this.target.position.x - this.target.tileProgress;
+        return (
+          this.target.position.x - this.target.tileProgress - this.target.speed
+        );
       }
 
       return this.target.position.x;
@@ -42,14 +46,18 @@ export class Bullet extends Sprite {
 
     const getTargetPositionY = () => {
       if (isMonsterMovingDown) {
-        return this.target.position.y + this.target.tileProgress;
+        return (
+          this.target.position.y + this.target.tileProgress + this.target.speed
+        );
       }
 
       if (isMonsterMovingUp) {
-        return this.target.position.y - this.target.tileProgress;
+        return (
+          this.target.position.y - this.target.tileProgress - this.target.speed
+        );
       }
 
-      return this.target.position.y + 0.5;
+      return this.target.position.y;
     };
 
     const dx = getTargetPositionX() - this.position.x;
@@ -78,16 +86,21 @@ export class Bullet extends Sprite {
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;
 
-    // Draw bullet (scaled to 25% of tile size)
+    // Draw bullet (scaled to 15% of tile size)
     const bulletSize = tileConfig.tileSize * 0.15;
+
+    // Center the bullet in the tile
+    const centeredX = posX - bulletSize / 2 + tileConfig.tileSize / 2;
+    const centeredY = posY - bulletSize / 2 + tileConfig.tileSize / 2;
+
     ctx.drawImage(
       this.sprite,
       0,
       0,
       62, // Source width
       57, // Source height
-      posX - bulletSize / 2 + 32,
-      posY - bulletSize / 2,
+      centeredX,
+      centeredY,
       bulletSize,
       bulletSize
     );

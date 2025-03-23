@@ -13,6 +13,6 @@ export interface Monster {
   speed: number;
   tileProgress: number; // Progress along the path (0 to 1)
 
-  draw: (ctx: CanvasRenderingContext2D) => void;
+  draw: (ctx: CanvasRenderingContext2D) => boolean;
   getBodyPosition: () => BodyPosition;
 }
