@@ -1,6 +1,6 @@
 import { Position } from "../types";
 
-enum BodyPosition {
+export enum BodyPosition {
   DOWN = 0,
   UP = 1,
   LEFT = 2,

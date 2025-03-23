@@ -1,5 +1,5 @@
 import { Monster, Position } from "../types";
-import { Sprite } from "../sprite/Sprite";
+import { BodyPosition, Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 
 export class Bullet extends Sprite {
@@ -7,7 +7,7 @@ export class Bullet extends Sprite {
   public position: Position;
   public target: Monster;
   public speed = 0.2;
-  public damage = 10;
+  public damage = 5;
 
   constructor(start: Position, target: Monster) {
     super();
@@ -20,10 +20,13 @@ export class Bullet extends Sprite {
   }
 
   public update(): boolean {
-    const isMonsterMovingRight = this.target.position.x > this.position.x;
-    const isMonsterMovingLeft = this.target.position.x < this.position.x;
-    const isMonsterMovingDown = this.target.position.y > this.position.y;
-    const isMonsterMovingUp = this.target.position.y < this.position.y;
+    const isMonsterMovingRight =
+      this.target.getBodyPosition() === BodyPosition.RIGHT;
+    const isMonsterMovingLeft =
+      this.target.getBodyPosition() === BodyPosition.LEFT;
+    const isMonsterMovingDown =
+      this.target.getBodyPosition() === BodyPosition.DOWN;
+    const isMonsterMovingUp = this.target.getBodyPosition() === BodyPosition.UP;
 
     const getTargetPositionX = () => {
       if (isMonsterMovingRight) {
@@ -39,18 +42,18 @@ export class Bullet extends Sprite {
 
     const getTargetPositionY = () => {
       if (isMonsterMovingDown) {
-        return this.target.position.y - this.target.tileProgress;
-      }
-
-      if (isMonsterMovingUp) {
         return this.target.position.y + this.target.tileProgress;
       }
 
-      return this.target.position.y;
+      if (isMonsterMovingUp) {
+        return this.target.position.y - this.target.tileProgress;
+      }
+
+      return this.target.position.y + 0.5;
     };
 
     const dx = getTargetPositionX() - this.position.x;
-    const dy = getTargetPositionY() - this.position.y + 0.25;
+    const dy = getTargetPositionY() - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Normalize direction
@@ -61,10 +64,8 @@ export class Bullet extends Sprite {
     this.position.x += dirX * this.speed;
     this.position.y += dirY * this.speed;
 
-    console.log(distance);
-
     // Check if bullet has reached target (within 0.1 tiles)
-    const hasReachedTarget = distance <= 0.3;
+    const hasReachedTarget = distance <= 0.2;
     if (!hasReachedTarget) return true;
 
     this.target.health -= this.damage;

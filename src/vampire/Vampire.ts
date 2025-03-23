@@ -1,5 +1,5 @@
 import { tileConfig } from "../constants";
-import { Sprite } from "../sprite/Sprite";
+import { BodyPosition, Sprite } from "../sprite/Sprite";
 import { Monster, Position } from "../types";
 
 export class Vampire extends Sprite implements Monster {
@@ -9,6 +9,8 @@ export class Vampire extends Sprite implements Monster {
 
   public id: string;
   public position: Position;
+  public nextPosition: Position;
+
   public health = 100;
   public speed = 0.025;
   public tileProgress = 0; // Progress between tiles (0 = at current tile, 1 = at next tile)
@@ -17,7 +19,9 @@ export class Vampire extends Sprite implements Monster {
     super();
     this.id = `vampire-${Date.now()}`;
     this.sprite.src = "/vampire.png";
+
     this.position = { x: path[0].x, y: path[0].y - 1 }; // Start outside the map
+    this.nextPosition = { x: path[0].x, y: path[0].y };
 
     this.sprite.onload = () => {
       this.ready = true;
@@ -27,17 +31,16 @@ export class Vampire extends Sprite implements Monster {
   public draw(ctx: CanvasRenderingContext2D) {
     if (!this.ready) return;
 
-    const nextPosition =
-      this.pathIndex === this.path.length - 1
-        ? { x: this.path[this.pathIndex].x, y: this.path[this.pathIndex].y + 1 }
-        : this.path[Math.min(this.pathIndex + 1, this.path.length)];
-
-    if (!nextPosition) return;
+    if (
+      this.nextPosition?.x === undefined ||
+      this.nextPosition?.y === undefined
+    )
+      return;
 
     // Determine which row of the sprite sheet to use based on movement direction
     // Returns BodyPosition enum value (0=DOWN, 1=UP, 2=LEFT, 3=RIGHT)
     const currentSpriteVariant = this.getCurrentSpriteVariant(
-      nextPosition,
+      this.nextPosition,
       this.position
     );
 
@@ -47,12 +50,12 @@ export class Vampire extends Sprite implements Monster {
     // progress between 0-1 -> vampire is between positions
     const posX =
       (this.position.x * (1 - this.tileProgress) +
-        nextPosition.x * this.tileProgress) *
+        this.nextPosition.x * this.tileProgress) *
       tileConfig.tileSize;
 
     const posY =
       (this.position.y * (1 - this.tileProgress) +
-        nextPosition.y * this.tileProgress) *
+        this.nextPosition.y * this.tileProgress) *
       tileConfig.tileSize;
 
     // Draw the vampire sprite:
@@ -87,6 +90,13 @@ export class Vampire extends Sprite implements Monster {
       this.tileProgress = 0;
       this.pathIndex = Math.min(this.pathIndex + 1, this.path.length);
       this.position = this.path[this.pathIndex];
+      this.nextPosition =
+        this.pathIndex === this.path.length - 1
+          ? {
+              x: this.path[this.pathIndex].x,
+              y: this.path[this.pathIndex].y + 1,
+            }
+          : this.path[Math.min(this.pathIndex + 1, this.path.length)];
     }
   }
 
@@ -118,5 +128,9 @@ export class Vampire extends Sprite implements Monster {
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 1;
     ctx.strokeRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+  }
+
+  public getBodyPosition(): BodyPosition {
+    return this.getCurrentSpriteVariant(this.nextPosition, this.position);
   }
 }

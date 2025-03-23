@@ -40,17 +40,17 @@ export class Game {
     // Spawn monsters
     this.spawnMonsters();
 
-    // Handle tower attacks
-    this.handleTowerAttacks();
-
     // Draw monsters
     this.drawMonsters(ctx);
+
+    // Update bullets
+    this.updateBullets();
 
     // Draw towers
     this.drawTowers(ctx);
 
-    // Update bullets
-    this.updateBullets();
+    // Handle tower attacks
+    this.handleTowerAttacks();
   }
 
   private spawnMonsters(): void {
