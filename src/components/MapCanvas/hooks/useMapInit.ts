@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { tileConfig } from "../constants";
-import { CharacterCanvas } from "./CharacterCanvas";
-import { findPath, findStartAndEnd } from "../utils/findPath";
+import { tileConfig } from "../../../constants";
 
-export const MapCanvas = () => {
+export const useMapInit = () => {
   const mapCanvasRef = useRef<HTMLCanvasElement>(null);
+
   const [mapGrid, setMapGrid] = useState<number[][]>([]);
-  const [monsterPath, setMonsterPath] = useState<{ x: number; y: number }[]>(
-    []
-  );
 
   useEffect(() => {
     const img = new Image();
@@ -50,40 +46,7 @@ export const MapCanvas = () => {
 
       setMapGrid(parsedMap);
     };
-  }, []);
+  }, [mapCanvasRef]);
 
-  useEffect(() => {
-    if (!mapGrid.length) return;
-
-    // Find start and end points
-    const { start, end } = findStartAndEnd(mapGrid);
-
-    if (!start || !end) {
-      console.error("Could not find start or end points on the map");
-      return;
-    }
-
-    // Find path using A* algorithm
-    const path = findPath(mapGrid, start, end);
-
-    if (path.length === 0) {
-      console.error("No valid path found between start and end points");
-      return;
-    }
-
-    setMonsterPath(path);
-  }, [mapGrid]);
-
-  return (
-    <div style={{ position: "relative" }}>
-      <canvas
-        ref={mapCanvasRef}
-        width={tileConfig.mapWidth * tileConfig.tileSize}
-        height={tileConfig.mapHeight * tileConfig.tileSize}
-        style={{ border: "1px solid black" }}
-      />
-
-      <CharacterCanvas path={monsterPath} />
-    </div>
-  );
+  return { mapGrid, mapCanvasRef };
 };

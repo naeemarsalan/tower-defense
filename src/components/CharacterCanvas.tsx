@@ -5,9 +5,10 @@ import { Game } from "../game/Game";
 
 interface Props {
   path: Position[];
+  game: Game;
 }
 
-export const CharacterCanvas = ({ path }: Props) => {
+export const CharacterCanvas = ({ path, game }: Props) => {
   const charCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -19,8 +20,6 @@ export const CharacterCanvas = ({ path }: Props) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const game = new Game(path);
-
     (() => {
       function main() {
         setTimeout(() => {
@@ -30,14 +29,14 @@ export const CharacterCanvas = ({ path }: Props) => {
       }
       main(); // Start the cycle
     })();
-  }, [path]);
+  }, [path, game]);
 
   return (
     <canvas
       ref={charCanvasRef}
       width={tileConfig.mapWidth * tileConfig.tileSize}
       height={tileConfig.mapHeight * tileConfig.tileSize}
-      style={{ position: "absolute", top: 0, left: 0 }}
+      style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
     />
   );
 };

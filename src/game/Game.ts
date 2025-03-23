@@ -1,8 +1,10 @@
 import { Monster, Position } from "../types";
 import { Vampire } from "../vampire/Vampire";
+import { Tower } from "../tower/Tower";
 
 export interface GameState {
   monsters: Monster[];
+  towers: Tower[];
 }
 
 export class Game {
@@ -18,11 +20,17 @@ export class Game {
     this.path = path;
     this.state = {
       monsters: [],
+      towers: [],
     };
   }
 
   public getState(): GameState {
     return { ...this.state };
+  }
+
+  public addTower(position: Position): void {
+    const tower = new Tower(position);
+    this.state.towers.push(tower);
   }
 
   public tick(ctx: CanvasRenderingContext2D | null): void {
@@ -32,23 +40,60 @@ export class Game {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     // Spawn monsters
+    this.spawnMonsters();
+
+    // Handle tower attacks
+    this.handleTowerAttacks();
+
+    // Remove dead monsters
+    this.removeDeadMonsters();
+
+    // Draw towers
+    this.drawTowers(ctx);
+
+    // Draw monsters
+    this.drawMonsters(ctx);
+  }
+
+  private spawnMonsters(): void {
     const currentTime = performance.now();
     if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
       if (this.state.monsters.length < this.MAX_MONSTERS) {
-        this.spawnMonster();
+        this.spawnVampire();
       }
       this.spawnInterval = 2000;
       this.lastSpawnTime = currentTime;
     }
+  }
 
-    // Draw monsters
-    this.state.monsters.forEach((monster) => {
-      monster.draw(ctx);
+  private spawnVampire(): void {
+    const vampire = new Vampire(this.path);
+    this.state.monsters.push(vampire);
+  }
+
+  private removeDeadMonsters(): void {
+    this.state.monsters = this.state.monsters.filter(
+      (monster) => monster.health > 0
+    );
+  }
+
+  private handleTowerAttacks(): void {
+    this.state.towers.forEach((tower) => {
+      this.state.monsters.forEach((monster) => {
+        tower.attack(monster);
+      });
     });
   }
 
-  private spawnMonster(): void {
-    const vampire = new Vampire(this.path);
-    this.state.monsters.push(vampire);
+  private drawTowers(ctx: CanvasRenderingContext2D): void {
+    this.state.towers.forEach((tower) => {
+      tower.draw(ctx);
+    });
+  }
+
+  private drawMonsters(ctx: CanvasRenderingContext2D): void {
+    this.state.monsters.forEach((monster) => {
+      monster.draw(ctx);
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { MapCanvas } from "./components/MapCanvas";
+import { MapCanvas } from "./components/MapCanvas/MapCanvas";
 
 function App() {
   return (
