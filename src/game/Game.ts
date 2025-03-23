@@ -80,7 +80,9 @@ export class Game {
   private handleTowerAttacks(): void {
     this.state.towers.forEach((tower) => {
       this.state.monsters.forEach((monster) => {
-        tower.attack(monster);
+        if (tower.isMonsterInRange(monster)) {
+          tower.attack(monster);
+        }
       });
     });
   }
