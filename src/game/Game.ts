@@ -8,13 +8,13 @@ export interface GameState {
 }
 
 export class Game {
-  public FPS = 16;
+  public FPS = 10;
 
   private state: GameState;
   private path: Position[];
   private spawnInterval: number = 0; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
-  private MAX_MONSTERS = 2;
+  private MAX_MONSTERS = 200;
 
   constructor(path: Position[]) {
     this.path = path;
@@ -44,6 +44,9 @@ export class Game {
 
     // Handle tower attacks
     this.handleTowerAttacks();
+
+    // Update bullets
+    this.updateBullets();
 
     // Remove dead monsters
     this.removeDeadMonsters();
@@ -84,6 +87,12 @@ export class Game {
           tower.attack(monster);
         }
       });
+    });
+  }
+
+  private updateBullets(): void {
+    this.state.towers.forEach((tower) => {
+      tower.updateBullets(this.state.monsters);
     });
   }
 
