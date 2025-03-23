@@ -10,7 +10,7 @@ export class Tower extends Sprite {
   public range = 1.5;
 
   private lastAttackTime = 0;
-  private attackCooldown = 1000; // 1 second between attacks
+  private attackCooldown = 2000; // 1 second between attacks
 
   public bullets: Bullet[] = [];
 
@@ -24,6 +24,8 @@ export class Tower extends Sprite {
   }
 
   public isMonsterInRange(monster: Monster): boolean {
+    if (!monster.position?.x || !monster.position?.y) return false;
+
     // Calculate Euclidean distance between tower and monster in tiles
     const dx = this.position.x - monster.position.x;
     const dy = this.position.y - monster.position.y;

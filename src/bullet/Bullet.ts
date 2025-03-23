@@ -35,7 +35,7 @@ export class Bullet extends Sprite {
     this.position.y += dirY * this.speed;
 
     // Check if bullet has reached target (within 0.1 tiles)
-    const hasReachedTarget = distance > 0.1;
+    const hasReachedTarget = distance <= 0.4;
     if (!hasReachedTarget) return true;
 
     this.target.health -= this.damage;
