@@ -43,17 +43,14 @@ export class Game {
     // Handle tower attacks
     this.handleTowerAttacks();
 
-    // Update bullets
-    this.updateBullets();
-
-    // Remove dead monsters
-    this.removeDeadMonsters();
+    // Draw monsters
+    this.drawMonsters(ctx);
 
     // Draw towers
     this.drawTowers(ctx);
 
-    // Draw monsters
-    this.drawMonsters(ctx);
+    // Update bullets
+    this.updateBullets();
   }
 
   private spawnMonsters(): void {
@@ -70,12 +67,6 @@ export class Game {
   private spawnVampire(): void {
     const vampire = new Vampire(this.path);
     this.state.monsters.push(vampire);
-  }
-
-  private removeDeadMonsters(): void {
-    this.state.monsters = this.state.monsters.filter(
-      (monster) => monster.health > 0
-    );
   }
 
   private handleTowerAttacks(): void {
@@ -106,6 +97,11 @@ export class Game {
   }
 
   private drawMonsters(ctx: CanvasRenderingContext2D): void {
+    // Remove dead monsters
+    this.state.monsters = this.state.monsters.filter(
+      (monster) => monster.health > 0
+    );
+
     this.state.monsters.forEach((monster) => {
       monster.draw(ctx);
     });
