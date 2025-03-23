@@ -1,5 +1,5 @@
 import { tileConfig } from "../constants";
-import { BodyPosition, Sprite } from "../sprite/Sprite";
+import { Sprite } from "../sprite/Sprite";
 import { Monster, Position } from "../types";
 
 export class Vampire extends Sprite implements Monster {
@@ -133,7 +133,14 @@ export class Vampire extends Sprite implements Monster {
     ctx.strokeRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
   }
 
-  public getBodyPosition(): BodyPosition {
-    return this.getCurrentSpriteVariant(this.nextPosition, this.position);
+  public getExactPosition(): Position {
+    return {
+      x:
+        this.position.x +
+        this.tileProgress * (this.nextPosition.x - this.position.x),
+      y:
+        this.position.y +
+        this.tileProgress * (this.nextPosition.y - this.position.y),
+    };
   }
 }

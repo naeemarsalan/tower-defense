@@ -1,5 +1,5 @@
 import { Position } from "../types";
-import { BodyPosition, Sprite } from "../sprite/Sprite";
+import { Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 import { Monster } from "../types";
 import { Bullet } from "../bullet/Bullet";
@@ -26,35 +26,8 @@ export class Tower extends Sprite {
   public isMonsterInRange(monster: Monster): boolean {
     if (!monster.position?.x || !monster.position?.y) return false;
 
-    const isMonsterMovingRight =
-      monster.getBodyPosition() === BodyPosition.RIGHT;
-    const isMonsterMovingLeft = monster.getBodyPosition() === BodyPosition.LEFT;
-    const isMonsterMovingDown = monster.getBodyPosition() === BodyPosition.DOWN;
-    const isMonsterMovingUp = monster.getBodyPosition() === BodyPosition.UP;
-
-    const getMonsterXPosition = () => {
-      if (isMonsterMovingRight) {
-        return monster.position.x + monster.tileProgress;
-      }
-      if (isMonsterMovingLeft) {
-        return monster.position.x - monster.tileProgress;
-      }
-      return monster.position.x;
-    };
-
-    const getMonsterYPosition = () => {
-      if (isMonsterMovingDown) {
-        return monster.position.y + monster.tileProgress;
-      }
-      if (isMonsterMovingUp) {
-        return monster.position.y - monster.tileProgress;
-      }
-      return monster.position.y;
-    };
-
-    // Calculate Euclidean distance between tower and monster in tiles
-    const dx = this.position.x - getMonsterXPosition();
-    const dy = this.position.y - getMonsterYPosition();
+    const dx = this.position.x - monster.getExactPosition().x;
+    const dy = this.position.y - monster.getExactPosition().y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Check if any part of the monster is within range

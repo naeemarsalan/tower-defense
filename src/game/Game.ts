@@ -106,7 +106,8 @@ export class Game {
       if (monster.health > 0) {
         return true;
       }
-      this.explosions.push(new Explosion(monster.position));
+
+      this.explosions.push(new Explosion(monster.getExactPosition()));
       return false;
     });
 

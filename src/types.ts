@@ -5,12 +5,14 @@ export interface Position {
 
 export interface Monster {
   id: string;
+
   position: Position;
   nextPosition: Position;
+  tileProgress: number;
+
   health: number;
   speed: number;
-  tileProgress: number; // Progress along the path (0 to 1)
 
-  draw: (ctx: CanvasRenderingContext2D) => boolean;
-  getExactPosition: () => Position;
+  draw(ctx: CanvasRenderingContext2D): boolean;
+  getExactPosition(): Position;
 }

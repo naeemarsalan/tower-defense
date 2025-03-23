@@ -1,5 +1,5 @@
 import { Monster, Position } from "../types";
-import { BodyPosition, Sprite } from "../sprite/Sprite";
+import { Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 
 export class Bullet extends Sprite {
@@ -7,7 +7,7 @@ export class Bullet extends Sprite {
   public position: Position;
   public target: Monster;
   public speed = 0.1;
-  public damage = 100;
+  public damage = 10;
 
   constructor(start: Position, target: Monster) {
     super();
@@ -20,48 +20,8 @@ export class Bullet extends Sprite {
   }
 
   public update(): boolean {
-    const isMonsterMovingRight =
-      this.target.getBodyPosition() === BodyPosition.RIGHT;
-    const isMonsterMovingLeft =
-      this.target.getBodyPosition() === BodyPosition.LEFT;
-    const isMonsterMovingDown =
-      this.target.getBodyPosition() === BodyPosition.DOWN;
-    const isMonsterMovingUp = this.target.getBodyPosition() === BodyPosition.UP;
-
-    const getTargetPositionX = () => {
-      if (isMonsterMovingRight) {
-        return (
-          this.target.position.x + this.target.tileProgress + this.target.speed
-        );
-      }
-
-      if (isMonsterMovingLeft) {
-        return (
-          this.target.position.x - this.target.tileProgress - this.target.speed
-        );
-      }
-
-      return this.target.position.x;
-    };
-
-    const getTargetPositionY = () => {
-      if (isMonsterMovingDown) {
-        return (
-          this.target.position.y + this.target.tileProgress + this.target.speed
-        );
-      }
-
-      if (isMonsterMovingUp) {
-        return (
-          this.target.position.y - this.target.tileProgress - this.target.speed
-        );
-      }
-
-      return this.target.position.y;
-    };
-
-    const dx = getTargetPositionX() - this.position.x;
-    const dy = getTargetPositionY() - this.position.y;
+    const dx = this.target.getExactPosition().x - this.position.x;
+    const dy = this.target.getExactPosition().y - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Normalize direction
