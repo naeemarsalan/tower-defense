@@ -6,6 +6,7 @@ import { Explosion } from "../effects/Explosion";
 export interface GameState {
   monsters: Monster[];
   towers: Tower[];
+  level: number;
 }
 
 export class Game {
@@ -15,17 +16,20 @@ export class Game {
   private path: Position[];
   private explosions: Explosion[] = [];
 
-  private spawnInterval: number = 2000; // Time between monster spawns in ms
+  private spawnInterval: number; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
 
-  private MAX_MONSTERS = 1;
+  public monstersToSpawn: number;
 
   constructor(path: Position[]) {
     this.path = path;
     this.state = {
       monsters: [],
       towers: [],
+      level: 1,
     };
+    this.spawnInterval = 2000 / this.state.level;
+    this.monstersToSpawn = 10 * this.state.level;
   }
 
   public addTower(position: Position): void {
@@ -61,7 +65,7 @@ export class Game {
   private spawnMonsters(): void {
     const currentTime = performance.now();
     if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
-      if (this.state.monsters.length < this.MAX_MONSTERS) {
+      if (this.state.monsters.length < this.monstersToSpawn) {
         this.spawnVampire();
       }
       this.lastSpawnTime = currentTime;
