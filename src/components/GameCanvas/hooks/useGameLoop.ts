@@ -12,9 +12,7 @@ export const useGameLoop = (
 
         setTimeout(() => {
           window.requestAnimationFrame(main);
-          if (!game.isPaused) {
-            game.tick(ctx);
-          }
+          game.tick(ctx);
         }, 1000 / game.FPS);
       }
       main(); // Start the cycle
