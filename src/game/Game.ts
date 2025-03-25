@@ -4,15 +4,11 @@ import { Tower } from "../tower/Tower";
 import { Explosion } from "../effects/Explosion";
 import { Level } from "../level/Level";
 
-export interface GameState {
-  monsters: Monster[];
-  towers: Tower[];
-}
-
 export class Game {
-  public state: GameState;
-  private path: Position[];
+  public monsters: Monster[] = [];
+  public towers: Tower[] = [];
   private explosions: Explosion[] = [];
+  private path: Position[];
   private lastSpawnTime: number = 0;
 
   public level: Level;
@@ -21,16 +17,12 @@ export class Game {
 
   constructor(path: Position[], currentLevel: number) {
     this.path = path;
-    this.state = {
-      monsters: [],
-      towers: [],
-    };
     this.level = new Level(currentLevel);
   }
 
   public addTower(position: Position): void {
     const tower = new Tower(position);
-    this.state.towers.push(tower);
+    this.towers.push(tower);
   }
 
   public tick(ctx: CanvasRenderingContext2D | null): void {
@@ -60,7 +52,7 @@ export class Game {
 
   private checkLevelEnd(): void {
     if (
-      this.state.monsters.length === 0 &&
+      this.monsters.length === 0 &&
       this.spawnedMonsters === this.level.monstersToSpawn
     ) {
       this.isPaused = true;
@@ -72,7 +64,7 @@ export class Game {
 
     const currentTime = performance.now();
     if (currentTime - this.lastSpawnTime >= this.level.spawnInterval) {
-      if (this.state.monsters.length < this.level.monstersToSpawn) {
+      if (this.monsters.length < this.level.monstersToSpawn) {
         this.spawnMonster();
         this.spawnedMonsters++;
       }
@@ -82,12 +74,12 @@ export class Game {
 
   private spawnMonster(): void {
     const vampire = new Vampire(this.path);
-    this.state.monsters.push(vampire);
+    this.monsters.push(vampire);
   }
 
   private handleTowerAttacks(): void {
-    this.state.towers.forEach((tower) => {
-      this.state.monsters.forEach((monster) => {
+    this.towers.forEach((tower) => {
+      this.monsters.forEach((monster) => {
         if (tower.isMonsterInRange(monster)) {
           tower.attack(monster);
         }
@@ -96,7 +88,7 @@ export class Game {
   }
 
   private updateBullets(): void {
-    this.state.towers.forEach((tower) => {
+    this.towers.forEach((tower) => {
       tower.bullets.forEach((bullet) => {
         const isAlive = bullet.update();
         if (!isAlive) {
@@ -107,14 +99,14 @@ export class Game {
   }
 
   private drawTowers(ctx: CanvasRenderingContext2D): void {
-    this.state.towers.forEach((tower) => {
+    this.towers.forEach((tower) => {
       tower.draw(ctx);
     });
   }
 
   private drawMonsters(ctx: CanvasRenderingContext2D): void {
     // Remove dead monsters
-    this.state.monsters = this.state.monsters.filter((monster) => {
+    this.monsters = this.monsters.filter((monster) => {
       if (monster.health > 0) {
         return true;
       }
@@ -125,10 +117,10 @@ export class Game {
 
     this.checkLevelEnd();
 
-    this.state.monsters.forEach((monster) => {
+    this.monsters.forEach((monster) => {
       const hasReachedEnd = monster.draw(ctx);
       if (hasReachedEnd) {
-        this.state.monsters = this.state.monsters.filter((m) => m !== monster);
+        this.monsters = this.monsters.filter((m) => m !== monster);
       }
     });
   }

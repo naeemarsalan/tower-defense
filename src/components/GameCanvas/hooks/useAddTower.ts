@@ -24,7 +24,7 @@ export const useAddTower = ({ mapGrid, game, gameCanvasRef }: Args) => {
 
       // Check if tower already exists
       if (
-        game.state.towers.find(
+        game.towers.find(
           (tower) => tower.position.x === gridX && tower.position.y === gridY
         )
       )
