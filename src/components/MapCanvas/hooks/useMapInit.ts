@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { tileConfig } from "../../../constants";
+import { Level } from "../../../level/Level";
 
 export const useMapInit = (
-  mapCanvasRef: React.RefObject<HTMLCanvasElement | null>
+  mapCanvasRef: React.RefObject<HTMLCanvasElement | null>,
+  currentLevel: number
 ) => {
   const [mapGrid, setMapGrid] = useState<number[][]>([]);
 
   useEffect(() => {
+    const level = new Level(currentLevel);
     const img = new Image();
-    img.src = "/map.png";
+    img.src = level.background.src;
     img.onload = () => {
       const ctx = mapCanvasRef.current?.getContext("2d");
       if (!ctx) return;
@@ -46,7 +49,7 @@ export const useMapInit = (
 
       setMapGrid(parsedMap);
     };
-  }, [mapCanvasRef]);
+  }, [mapCanvasRef, currentLevel]);
 
-  return { mapGrid, mapCanvasRef };
+  return { mapGrid };
 };

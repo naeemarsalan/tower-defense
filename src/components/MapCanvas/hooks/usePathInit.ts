@@ -3,7 +3,7 @@ import { findPath, findStartAndEnd } from "../../../utils/findPath";
 import { Position } from "../../../types";
 
 export const usePathInit = (mapGrid: number[][]) => {
-  const [path, setPath] = useState<Array<Position>>();
+  const [path, setPath] = useState<Array<Position>>([]);
 
   useEffect(() => {
     if (!mapGrid.length) return;

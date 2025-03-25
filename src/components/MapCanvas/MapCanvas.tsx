@@ -1,21 +1,20 @@
 import { tileConfig } from "../../constants";
-import { CharacterCanvas } from "../CharacterCanvas";
 import { useMapInit } from "./hooks/useMapInit";
 import { usePathInit } from "./hooks/usePathInit";
-import { useGameInit } from "./hooks/useGameInit";
-import { useAddTower } from "./hooks/useAddTower";
 import { useRef } from "react";
+import { GameCanvas } from "../GameCanvas/GameCanvas";
 
-export const MapCanvas = () => {
+interface Props {
+  currentLevel: number;
+  setCurrentLevel: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const MapCanvas = ({ currentLevel }: Props) => {
   const mapCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { mapGrid } = useMapInit(mapCanvasRef);
+  const { mapGrid } = useMapInit(mapCanvasRef, currentLevel);
 
   const { path } = usePathInit(mapGrid);
-
-  const { game } = useGameInit(path);
-
-  const { addTower } = useAddTower({ mapGrid, game, mapCanvasRef });
 
   return (
     <div style={{ position: "relative" }}>
@@ -24,10 +23,9 @@ export const MapCanvas = () => {
         width={tileConfig.mapWidth * tileConfig.tileSize}
         height={tileConfig.mapHeight * tileConfig.tileSize}
         style={{ border: "1px solid black" }}
-        onClick={addTower}
       />
 
-      {game && path && <CharacterCanvas path={path} game={game} />}
+      <GameCanvas path={path} currentLevel={currentLevel} mapGrid={mapGrid} />
     </div>
   );
 };

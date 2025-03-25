@@ -1,13 +1,16 @@
 export class Level {
-  public count = 1;
   public monstersToSpawn = 10;
   public spawnInterval = 2000;
+  public background: HTMLImageElement;
 
-  constructor() {}
+  constructor(public difficulty: number) {
+    this.background = new Image();
+    this.background.src = "/map.png";
+  }
 
   public updateLevel(): void {
-    this.count++;
-    this.monstersToSpawn = 10 * this.count;
-    this.spawnInterval = 2000 / this.count;
+    this.difficulty++;
+    this.monstersToSpawn = 10 * this.difficulty;
+    this.spawnInterval = 2000 / this.difficulty;
   }
 }

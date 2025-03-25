@@ -21,13 +21,13 @@ export class Game {
   public spawnedMonsters: number = 0;
   public isPaused: boolean = false;
 
-  constructor(path: Position[]) {
+  constructor(path: Position[], currentLevel: number) {
     this.path = path;
     this.state = {
       monsters: [],
       towers: [],
     };
-    this.level = new Level();
+    this.level = new Level(currentLevel);
   }
 
   public addTower(position: Position): void {

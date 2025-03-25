@@ -5,15 +5,15 @@ import { tileConfig } from "../../../constants";
 interface Args {
   mapGrid: number[][];
   game: Game | null;
-  mapCanvasRef: React.RefObject<HTMLCanvasElement | null>;
+  gameCanvasRef: React.RefObject<HTMLCanvasElement | null>;
 }
 
-export const useAddTower = ({ mapGrid, game, mapCanvasRef }: Args) => {
+export const useAddTower = ({ mapGrid, game, gameCanvasRef }: Args) => {
   const addTower = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!game || !mapCanvasRef.current) return false;
+      if (!game || !gameCanvasRef.current) return false;
 
-      const canvas = mapCanvasRef.current;
+      const canvas = gameCanvasRef.current;
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -35,7 +35,7 @@ export const useAddTower = ({ mapGrid, game, mapCanvasRef }: Args) => {
       }
       return false;
     },
-    [game, mapCanvasRef, mapGrid]
+    [game, gameCanvasRef, mapGrid]
   );
 
   return { addTower };
