@@ -22,7 +22,16 @@ export class Game {
     this.level = new Level(currentLevel);
   }
 
-  public addTower(position: Position): void {
+  public addTower(position: Position) {
+    // Check if tower already exists
+    if (
+      this.towers.find(
+        (tower) =>
+          tower.position.x === position.x && tower.position.y === position.y
+      )
+    )
+      return;
+
     const tower = new Tower(position);
     this.towers.push(tower);
   }
