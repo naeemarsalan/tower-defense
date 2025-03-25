@@ -5,21 +5,26 @@ import { Explosion } from "../effects/Explosion";
 import { Level } from "../level/Level";
 
 export class Game {
-  private level: Level;
-  private path: Position[];
-
   private monsters: Monster[] = [];
   private towers: Tower[] = [];
   private explosions: Explosion[] = [];
 
+  private level: Level = new Level(1);
   private spawnedMonsters: number = 0;
   private lastSpawnTime: number = 0;
 
   private isPaused = false;
 
-  constructor(path: Position[], currentLevel: number) {
-    this.path = path;
-    this.level = new Level(currentLevel);
+  constructor(
+    private path: Position[],
+    private eventCallbacks: {
+      onMonsterSpawn: () => void;
+      onGamePause: () => void;
+    }
+  ) {}
+
+  public updatePath(newPath: Position[]): void {
+    this.path = newPath;
   }
 
   public addTower(position: Position) {
@@ -38,6 +43,8 @@ export class Game {
 
   public tick(ctx: CanvasRenderingContext2D | null): void {
     if (!ctx) return;
+
+    if (this.isPaused) return;
 
     // Clear the canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -64,9 +71,12 @@ export class Game {
   private checkLevelEnd(): void {
     if (
       this.monsters.length === 0 &&
-      this.spawnedMonsters === this.level.monstersToSpawn
+      this.spawnedMonsters === this.level.monstersToSpawn &&
+      this.explosions.length === 0 &&
+      this.towers.every((tower) => tower.bullets.length === 0)
     ) {
       this.isPaused = true;
+      this.eventCallbacks.onGamePause();
     }
   }
 
@@ -78,6 +88,7 @@ export class Game {
       if (this.monsters.length < this.level.monstersToSpawn) {
         this.spawnMonster();
         this.spawnedMonsters++;
+        this.eventCallbacks.onMonsterSpawn();
       }
       this.lastSpawnTime = currentTime;
     }
@@ -118,9 +129,7 @@ export class Game {
   private drawMonsters(ctx: CanvasRenderingContext2D): void {
     // Remove dead monsters
     this.monsters = this.monsters.filter((monster) => {
-      if (monster.health > 0) {
-        return true;
-      }
+      if (monster.health > 0) return true;
 
       this.explosions.push(new Explosion(monster.getExactPosition()));
       return false;
@@ -145,5 +154,18 @@ export class Game {
       }
       return isRunning;
     });
+  }
+
+  public levelUp(ctx: CanvasRenderingContext2D | null): void {
+    if (!ctx) return;
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.level.updateLevel();
+
+    // Reset game state
+    this.spawnedMonsters = 0;
+    this.lastSpawnTime = 0;
+    this.isPaused = false;
   }
 }

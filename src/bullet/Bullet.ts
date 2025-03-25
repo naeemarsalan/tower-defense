@@ -6,7 +6,7 @@ export class Bullet extends Sprite {
   public ready = false;
   public position: Position;
   public target: Monster;
-  public speed = 0.2;
+  public speed = 0.1;
   public damage = 10;
 
   constructor(start: Position, target: Monster) {

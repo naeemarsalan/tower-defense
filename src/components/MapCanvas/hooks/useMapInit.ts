@@ -16,7 +16,7 @@ export const useMapInit = (
       const ctx = mapCanvasRef.current?.getContext("2d");
       if (!ctx) return;
 
-      // ✅ Draw the full map image
+      // Draw the full map image
       ctx.drawImage(
         img,
         0,
@@ -25,7 +25,7 @@ export const useMapInit = (
         tileConfig.mapHeight * tileConfig.tileSize
       );
 
-      // ✅ Parse the map
+      // Parse the map
       const parsedMap: number[][] = [];
       for (let y = 0; y < tileConfig.mapHeight; y++) {
         const row: number[] = [];
@@ -46,7 +46,6 @@ export const useMapInit = (
         }
         parsedMap.push(row);
       }
-
       setMapGrid(parsedMap);
     };
   }, [mapCanvasRef, currentLevel]);

@@ -12,7 +12,7 @@ export class Vampire extends Sprite implements Monster {
   public nextPosition: Position;
 
   public health = 100;
-  public speed = 0.05;
+  public speed = 0.025;
   public tileProgress = 0; // Progress between tiles (0 = at current tile, 1 = at next tile)
 
   constructor(public path: Position[]) {

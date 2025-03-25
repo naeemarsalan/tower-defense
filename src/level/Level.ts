@@ -1,5 +1,5 @@
 export class Level {
-  public monstersToSpawn = 10;
+  public monstersToSpawn = 1;
   public spawnInterval = 2000;
   public background: HTMLImageElement;
 
@@ -10,7 +10,7 @@ export class Level {
 
   public updateLevel(): void {
     this.difficulty++;
-    this.monstersToSpawn = 10 * this.difficulty;
+    this.monstersToSpawn = 1 * this.difficulty;
     this.spawnInterval = 2000 / this.difficulty;
   }
 }
