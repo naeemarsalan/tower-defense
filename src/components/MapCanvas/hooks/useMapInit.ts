@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { tileConfig } from "../../../constants";
 
-export const useMapInit = () => {
-  const mapCanvasRef = useRef<HTMLCanvasElement>(null);
-
+export const useMapInit = (
+  mapCanvasRef: React.RefObject<HTMLCanvasElement | null>
+) => {
   const [mapGrid, setMapGrid] = useState<number[][]>([]);
 
   useEffect(() => {

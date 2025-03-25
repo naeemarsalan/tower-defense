@@ -4,9 +4,12 @@ import { useMapInit } from "./hooks/useMapInit";
 import { usePathInit } from "./hooks/usePathInit";
 import { useGameInit } from "./hooks/useGameInit";
 import { useAddTower } from "./hooks/useAddTower";
+import { useRef } from "react";
 
 export const MapCanvas = () => {
-  const { mapCanvasRef, mapGrid } = useMapInit();
+  const mapCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const { mapGrid } = useMapInit(mapCanvasRef);
 
   const { path } = usePathInit(mapGrid);
 
