@@ -12,31 +12,28 @@ export const useGameInit = (
   const [spawnedMonsters, setSpawnedMonsters] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const handleMonsterSpawn = useCallback(() => {
-    setSpawnedMonsters((prev) => prev + 1);
-  }, []);
-
-  const handleGamePause = useCallback(() => {
-    setIsPaused((prev) => !prev);
-  }, []);
-
   // Create game instance only once
   useEffect(() => {
+    // If game is already created, don't create it again
     if (game) return;
 
+    // If path is not set, don't create game
     if (!path.length) return;
 
     const eventCallbacks = {
-      onMonsterSpawn: handleMonsterSpawn,
-      onGamePause: handleGamePause,
+      onMonsterSpawn: () => setSpawnedMonsters((prev) => prev + 1),
+      onGamePause: () => setIsPaused((prev) => !prev),
     };
 
     setGame(new Game(path, eventCallbacks));
-  }, [handleMonsterSpawn, handleGamePause, path, game]); // Dependencies needed for callbacks
+  }, [path, game]); // Dependencies needed for callbacks
 
   // Update path when it changes
   useEffect(() => {
+    // If game is not created, don't update path
     if (!game || !path.length) return;
+
+    // Update only path to preserve game state
     game.updatePath(path);
   }, [game, path]);
 
