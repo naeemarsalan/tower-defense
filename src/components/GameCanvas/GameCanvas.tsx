@@ -19,8 +19,6 @@ export const GameCanvas = ({ path, currentLevel, mapGrid }: Props) => {
 
   const { addTower } = useAddTower({ mapGrid, game, gameCanvasRef });
 
-  console.log(game?.spawnedMonsters);
-
   return (
     <canvas
       ref={gameCanvasRef}

@@ -19,7 +19,7 @@ export class Game {
 
   public level: Level;
   public spawnedMonsters: number = 0;
-  public isPaused: boolean = false;
+  public isPaused = false;
 
   constructor(path: Position[], currentLevel: number) {
     this.path = path;
