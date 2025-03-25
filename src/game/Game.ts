@@ -5,17 +5,17 @@ import { Explosion } from "../effects/Explosion";
 import { Level } from "../level/Level";
 
 export class Game {
-  public level: Level;
+  private level: Level;
   private path: Position[];
 
-  public monsters: Monster[] = [];
-  public towers: Tower[] = [];
+  private monsters: Monster[] = [];
+  private towers: Tower[] = [];
   private explosions: Explosion[] = [];
 
-  public spawnedMonsters: number = 0;
+  private spawnedMonsters: number = 0;
   private lastSpawnTime: number = 0;
 
-  public isPaused = false;
+  private isPaused = false;
 
   constructor(path: Position[], currentLevel: number) {
     this.path = path;
