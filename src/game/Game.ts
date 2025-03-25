@@ -2,11 +2,11 @@ import { Monster, Position } from "../types";
 import { Vampire } from "../vampire/Vampire";
 import { Tower } from "../tower/Tower";
 import { Explosion } from "../effects/Explosion";
+import { Level } from "../level/Level";
 
 export interface GameState {
   monsters: Monster[];
   towers: Tower[];
-  level: number;
 }
 
 export class Game {
@@ -15,21 +15,19 @@ export class Game {
   private state: GameState;
   private path: Position[];
   private explosions: Explosion[] = [];
-
-  private spawnInterval: number; // Time between monster spawns in ms
   private lastSpawnTime: number = 0;
 
-  public monstersToSpawn: number;
+  public level: Level;
+  public spawnedMonsters: number = 0;
+  public isPaused: boolean = false;
 
   constructor(path: Position[]) {
     this.path = path;
     this.state = {
       monsters: [],
       towers: [],
-      level: 1,
     };
-    this.spawnInterval = 2000 / this.state.level;
-    this.monstersToSpawn = 10 * this.state.level;
+    this.level = new Level();
   }
 
   public addTower(position: Position): void {
@@ -62,11 +60,23 @@ export class Game {
     this.updateBullets();
   }
 
+  private checkLevelEnd(): void {
+    if (
+      this.state.monsters.length === 0 &&
+      this.spawnedMonsters === this.level.monstersToSpawn
+    ) {
+      this.isPaused = true;
+    }
+  }
+
   private spawnMonsters(): void {
+    if (this.spawnedMonsters >= this.level.monstersToSpawn) return;
+
     const currentTime = performance.now();
-    if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
-      if (this.state.monsters.length < this.monstersToSpawn) {
+    if (currentTime - this.lastSpawnTime >= this.level.spawnInterval) {
+      if (this.state.monsters.length < this.level.monstersToSpawn) {
         this.spawnVampire();
+        this.spawnedMonsters++;
       }
       this.lastSpawnTime = currentTime;
     }
@@ -114,6 +124,8 @@ export class Game {
       this.explosions.push(new Explosion(monster.getExactPosition()));
       return false;
     });
+
+    this.checkLevelEnd();
 
     this.state.monsters.forEach((monster) => {
       const hasReachedEnd = monster.draw(ctx);
