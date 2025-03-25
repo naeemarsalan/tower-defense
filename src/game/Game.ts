@@ -10,8 +10,6 @@ export interface GameState {
 }
 
 export class Game {
-  public FPS = 16;
-
   public state: GameState;
   private path: Position[];
   private explosions: Explosion[] = [];

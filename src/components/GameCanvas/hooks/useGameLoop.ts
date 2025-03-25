@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { Game } from "../../../game/Game";
 
+const FPS = 16;
+const TICK_INTERVAL = 1000 / FPS;
+
 export const useGameLoop = (
   game: Game | null,
   ctx?: CanvasRenderingContext2D | null
@@ -13,7 +16,7 @@ export const useGameLoop = (
         setTimeout(() => {
           window.requestAnimationFrame(main);
           game.tick(ctx);
-        }, 1000 / game.FPS);
+        }, TICK_INTERVAL);
       }
       main(); // Start the cycle
     })();
