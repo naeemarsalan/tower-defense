@@ -75,14 +75,14 @@ export class Game {
     const currentTime = performance.now();
     if (currentTime - this.lastSpawnTime >= this.level.spawnInterval) {
       if (this.state.monsters.length < this.level.monstersToSpawn) {
-        this.spawnVampire();
+        this.spawnMonster();
         this.spawnedMonsters++;
       }
       this.lastSpawnTime = currentTime;
     }
   }
 
-  private spawnVampire(): void {
+  private spawnMonster(): void {
     const vampire = new Vampire(this.path);
     this.state.monsters.push(vampire);
   }
