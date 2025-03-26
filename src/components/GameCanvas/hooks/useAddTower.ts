@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Game } from "../../../game/Game";
 import { tileConfig } from "../../../constants";
+import { SpikeTower } from "../../../towers/SpikeTower";
 
 interface Args {
   mapGrid: number[][];
@@ -33,7 +34,8 @@ export const useAddTower = ({ mapGrid, game, gameCanvasRef, gold }: Args) => {
         gridY < tileConfig.mapHeight &&
         mapGrid[gridY][gridX] === 0
       ) {
-        game.addTower(position, gold);
+        const tower = new SpikeTower(position);
+        game.addTower(tower, gold);
       }
     },
     [game, gameCanvasRef, mapGrid, gold]

@@ -14,3 +14,8 @@ export interface Monster {
   draw: (ctx: CanvasRenderingContext2D) => boolean;
   getExactPosition: () => Position;
 }
+
+export enum TowerType {
+  stone = "stone",
+  spike = "spike",
+}

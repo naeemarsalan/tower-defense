@@ -1,22 +1,25 @@
 import { Monster, Position } from "../types";
-import { Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 
-export class Bullet extends Sprite {
-  public ready = false;
+export class Bullet {
   public position: Position;
   public target: Monster;
-  public speed = 0.1;
-  public damage = 10;
+  public damage: number;
+  public speed: number;
+  public sprite: HTMLImageElement;
 
-  constructor(start: Position, target: Monster) {
-    super();
+  constructor(
+    start: Position,
+    target: Monster,
+    damage: number,
+    speed: number,
+    sprite: HTMLImageElement
+  ) {
     this.position = start;
     this.target = target;
-    this.sprite.src = "/bullet.png"; // You'll need to add a bullet sprite
-    this.sprite.onload = () => {
-      this.ready = true;
-    };
+    this.sprite = sprite;
+    this.damage = damage;
+    this.speed = speed;
   }
 
   public update(): boolean {
@@ -41,8 +44,6 @@ export class Bullet extends Sprite {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
-    if (!this.ready) return;
-
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;
 

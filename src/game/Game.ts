@@ -1,6 +1,6 @@
 import { Monster, Position } from "../types";
 import { Vampire } from "../vampire/Vampire";
-import { Tower } from "../tower/Tower";
+import { Tower } from "../towers/Tower";
 import { Explosion } from "../effects/Explosion";
 import { Level } from "../level/Level";
 
@@ -30,17 +30,15 @@ export class Game {
     this.path = newPath;
   }
 
-  public addTower(position: Position, gold: number) {
+  public addTower(tower: Tower, gold: number) {
     // Check if tower already exists
     if (
       this.towers.find(
-        (tower) =>
-          tower.position.x === position.x && tower.position.y === position.y
+        (t) =>
+          t.position.x === tower.position.x && t.position.y === tower.position.y
       )
     )
       return;
-
-    const tower = new Tower(position);
 
     // Check if player has enough gold
     if (gold < tower.cost) return;
