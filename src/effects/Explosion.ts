@@ -7,14 +7,14 @@ export class Explosion extends Sprite {
   public position: Position;
 
   private currentFrame = 0;
-  private readonly frameCount = 3;
-  private readonly frameDuration = 120; // milliseconds
+  private readonly frameCount = 8;
+  private readonly frameDuration = 60; // milliseconds
   private lastFrameTime = 0;
 
   constructor(position: Position) {
     super();
     this.position = position;
-    this.sprite.src = "/explosions/1.png"; // First frame
+    this.sprite.src = "/explosion/1.png"; // First frame
     this.sprite.onload = () => {
       this.ready = true;
     };
@@ -33,7 +33,7 @@ export class Explosion extends Sprite {
 
       // Load next frame
       if (this.currentFrame < this.frameCount) {
-        this.sprite.src = `/explosions/${this.currentFrame + 1}.png`;
+        this.sprite.src = `/explosion/${this.currentFrame + 1}.png`;
       } else {
         return false;
       }
@@ -59,8 +59,8 @@ export class Explosion extends Sprite {
       this.sprite,
       0,
       0,
-      104, // Source width
-      109, // Source height
+      117, // Source width
+      114, // Source height
       centeredX,
       centeredY,
       explosionSize,
