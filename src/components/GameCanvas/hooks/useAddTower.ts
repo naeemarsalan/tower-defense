@@ -6,9 +6,10 @@ interface Args {
   mapGrid: number[][];
   game: Game | null;
   gameCanvasRef: React.RefObject<HTMLCanvasElement | null>;
+  gold: number;
 }
 
-export const useAddTower = ({ mapGrid, game, gameCanvasRef }: Args) => {
+export const useAddTower = ({ mapGrid, game, gameCanvasRef, gold }: Args) => {
   const addTower = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
       if (!game || !gameCanvasRef.current) return false;
@@ -22,6 +23,8 @@ export const useAddTower = ({ mapGrid, game, gameCanvasRef }: Args) => {
       const gridX = Math.floor(x / tileConfig.tileSize);
       const gridY = Math.floor(y / tileConfig.tileSize);
 
+      const position = { x: gridX, y: gridY };
+
       // Check if the clicked position is within bounds and is a sand tile (0)
       if (
         gridX >= 0 &&
@@ -30,10 +33,10 @@ export const useAddTower = ({ mapGrid, game, gameCanvasRef }: Args) => {
         gridY < tileConfig.mapHeight &&
         mapGrid[gridY][gridX] === 0
       ) {
-        game.addTower({ x: gridX, y: gridY });
+        game.addTower(position, gold);
       }
     },
-    [game, gameCanvasRef, mapGrid]
+    [game, gameCanvasRef, mapGrid, gold]
   );
 
   return { addTower };

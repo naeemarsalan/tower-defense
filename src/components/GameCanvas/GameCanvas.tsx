@@ -19,18 +19,20 @@ interface Props {
 export const GameCanvas = memo(({ mapGrid, setCurrentLevel }: Props) => {
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { spawnedMonsters, game, isPaused, continueGame } = useGameInit(
-    mapGrid,
-    setCurrentLevel
-  );
+  const { spawnedMonsters, game, isPaused, continueGame, gold, lives } =
+    useGameInit(mapGrid, setCurrentLevel);
 
   useGameLoop(game, gameCanvasRef?.current?.getContext("2d"));
 
-  const { addTower } = useAddTower({ mapGrid, game, gameCanvasRef });
+  const { addTower } = useAddTower({ mapGrid, game, gameCanvasRef, gold });
 
   return (
     <>
-      <h2>Spawned Monsters: {spawnedMonsters}</h2>
+      <div className="absolute top-0 left-0 p-4 bg-slate-700/30 ">
+        <h2>Monsters: {spawnedMonsters}</h2>
+        <h2>Gold: {gold}</h2>
+        <h2>Lives: {lives}</h2>
+      </div>
       <canvas
         ref={gameCanvasRef}
         width={tileConfig.mapWidth * tileConfig.tileSize}

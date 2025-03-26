@@ -6,15 +6,15 @@ import { Bullet } from "../bullet/Bullet";
 
 export class Tower extends Sprite {
   public ready = false;
-  public position: Position;
   public range = 1.5; // in tiles
+  public cost = 1;
 
   private lastAttackTime = 0;
   private attackCooldown = 2000; // 2 second between attacks
 
   public bullets: Bullet[] = [];
 
-  constructor(position: Position) {
+  constructor(public position: Position) {
     super();
     this.position = position;
     this.sprite.src = "/tower.png"; // You'll need to add a tower sprite image

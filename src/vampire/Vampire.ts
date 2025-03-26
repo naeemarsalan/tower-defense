@@ -6,6 +6,7 @@ export class Vampire extends Sprite implements Monster {
   public spriteFrame = 0; // Start with down direction
   public pathIndex = -1; // Start outside the map
   public ready = false;
+  public reward = 10;
 
   public id: string;
   public position: Position;

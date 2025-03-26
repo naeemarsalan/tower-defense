@@ -12,6 +12,7 @@ export interface Monster {
 
   health: number;
   speed: number;
+  reward: number;
 
   draw(ctx: CanvasRenderingContext2D): boolean;
   getExactPosition(): Position;

@@ -20,6 +20,9 @@ export class Game {
     private eventCallbacks: {
       onMonsterSpawn: () => void;
       onGamePause: () => void;
+      onMonsterKilled: (reward: number) => void;
+      onTowerBuilt: (cost: number) => void;
+      onLivesLost: () => void;
     }
   ) {}
 
@@ -27,7 +30,7 @@ export class Game {
     this.path = newPath;
   }
 
-  public addTower(position: Position) {
+  public addTower(position: Position, gold: number) {
     // Check if tower already exists
     if (
       this.towers.find(
@@ -38,6 +41,12 @@ export class Game {
       return;
 
     const tower = new Tower(position);
+
+    // Check if player has enough gold
+    if (gold < tower.cost) return;
+
+    this.eventCallbacks.onTowerBuilt(tower.cost);
+
     this.towers.push(tower);
   }
 
@@ -131,7 +140,9 @@ export class Game {
     this.monsters = this.monsters.filter((monster) => {
       if (monster.health > 0) return true;
 
+      // Monster is dead, add explosion and collect gold
       this.explosions.push(new Explosion(monster.getExactPosition()));
+      this.eventCallbacks.onMonsterKilled(monster.reward);
       return false;
     });
 
@@ -141,6 +152,7 @@ export class Game {
       const hasReachedEnd = monster.draw(ctx);
       if (hasReachedEnd) {
         this.monsters = this.monsters.filter((m) => m !== monster);
+        this.eventCallbacks.onLivesLost();
       }
     });
   }

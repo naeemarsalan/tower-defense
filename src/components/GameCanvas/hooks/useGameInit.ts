@@ -11,6 +11,8 @@ export const useGameInit = (
   const [game, setGame] = useState<Game | null>(null);
   const [spawnedMonsters, setSpawnedMonsters] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [gold, setGold] = useState(10);
+  const [lives, setLives] = useState(3);
 
   // Create game instance only once
   useEffect(() => {
@@ -23,6 +25,9 @@ export const useGameInit = (
     const eventCallbacks = {
       onMonsterSpawn: () => setSpawnedMonsters((prev) => prev + 1),
       onGamePause: () => setIsPaused((prev) => !prev),
+      onMonsterKilled: (reward: number) => setGold((prev) => prev + reward),
+      onTowerBuilt: (cost: number) => setGold((prev) => prev - cost),
+      onLivesLost: () => setLives((prev) => prev - 1),
     };
 
     setGame(new Game(path, eventCallbacks));
@@ -49,5 +54,12 @@ export const useGameInit = (
     [game, setCurrentLevel]
   );
 
-  return { spawnedMonsters, game, isPaused, continueGame };
+  return {
+    spawnedMonsters,
+    game,
+    isPaused,
+    continueGame,
+    gold,
+    lives,
+  };
 };
