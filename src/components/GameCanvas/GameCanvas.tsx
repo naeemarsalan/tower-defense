@@ -1,5 +1,5 @@
 import { tileConfig } from "../../constants";
-import { memo, useRef } from "react";
+import { memo, useRef, useState } from "react";
 import { useGameLoop } from "./hooks/useGameLoop";
 import { useGameInit } from "./hooks/useGameInit";
 import { useAddTower } from "./hooks/useAddTower";
@@ -10,6 +10,8 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
+import { cn } from "../../utils/styles";
+import { TowerType } from "../../towers/TowerFactory";
 
 interface Props {
   mapGrid: number[][];
@@ -24,15 +26,50 @@ export const GameCanvas = memo(({ mapGrid, setCurrentLevel }: Props) => {
 
   useGameLoop(game, gameCanvasRef?.current?.getContext("2d"));
 
-  const { addTower } = useAddTower({ mapGrid, game, gameCanvasRef, gold });
+  const [selectedTowerType, setSelectedTowerType] = useState<TowerType>(
+    TowerType.STONE
+  );
+
+  const { addTower } = useAddTower({
+    mapGrid,
+    game,
+    gameCanvasRef,
+    gold,
+    selectedTowerType,
+  });
 
   return (
     <>
-      <div className="absolute top-0 left-0 p-4 bg-slate-700/30 ">
+      <div className="absolute top-0 left-[-200px] p-4 bg-slate-700/30 ">
         <h2>Monsters: {spawnedMonsters}</h2>
         <h2>Gold: {gold}</h2>
         <h2>Lives: {lives}</h2>
+        <div className="flex gap-2">
+          <img
+            src="/towers/stone/base.png"
+            alt="Stone Tower"
+            className={cn(
+              "object-center object-contain w-12 h-12 cursor-pointer",
+              selectedTowerType === TowerType.STONE && "border-2 border-white"
+            )}
+            onClick={() => {
+              setSelectedTowerType(TowerType.STONE);
+            }}
+          />
+          <img
+            src="/towers/spike/base.png"
+            alt="Spike Tower"
+            className={cn(
+              "object-center object-contain w-12 h-12 cursor-pointer",
+              selectedTowerType === TowerType.SPIKE && "border-2 border-white"
+            )}
+            onClick={() => {
+              setSelectedTowerType(TowerType.SPIKE);
+            }}
+          />
+        </div>
       </div>
+
       <canvas
         ref={gameCanvasRef}
         width={tileConfig.mapWidth * tileConfig.tileSize}

@@ -1,17 +1,23 @@
 import { useCallback } from "react";
 import { Game } from "../../../game/Game";
 import { tileConfig } from "../../../constants";
-import { SpikeTower } from "../../../towers/SpikeTower";
-import { StoneTower } from "../../../towers/StoneTower";
+import { TowerFactory, TowerType } from "../../../towers/TowerFactory";
 
 interface Args {
   mapGrid: number[][];
   game: Game | null;
   gameCanvasRef: React.RefObject<HTMLCanvasElement | null>;
   gold: number;
+  selectedTowerType: TowerType;
 }
 
-export const useAddTower = ({ mapGrid, game, gameCanvasRef, gold }: Args) => {
+export const useAddTower = ({
+  mapGrid,
+  game,
+  gameCanvasRef,
+  gold,
+  selectedTowerType,
+}: Args) => {
   const addTower = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
       if (!game || !gameCanvasRef.current) return false;
@@ -35,15 +41,13 @@ export const useAddTower = ({ mapGrid, game, gameCanvasRef, gold }: Args) => {
         gridY < tileConfig.mapHeight &&
         mapGrid[gridY][gridX] === 0
       ) {
-        const tower =
-          Math.random() > 0.5
-            ? new StoneTower(position)
-            : new SpikeTower(position);
-
-        game.addTower(tower, gold);
+        game.addTower(
+          TowerFactory.createTower(selectedTowerType, position),
+          gold
+        );
       }
     },
-    [game, gameCanvasRef, mapGrid, gold]
+    [game, gameCanvasRef, mapGrid, gold, selectedTowerType]
   );
 
   return { addTower };
