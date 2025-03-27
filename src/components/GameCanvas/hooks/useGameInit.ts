@@ -24,7 +24,11 @@ export const useGameInit = (
 
     const eventCallbacks = {
       onMonsterSpawn: () => setSpawnedMonsters((prev) => prev + 1),
-      onGamePause: () => setIsPaused((prev) => !prev),
+      onGamePause: () => {
+        setTimeout(() => {
+          setIsPaused((prev) => !prev);
+        }, 750);
+      },
       onMonsterKilled: (reward: number) => setGold((prev) => prev + reward),
       onTowerBuilt: (cost: number) => setGold((prev) => prev - cost),
       onLivesLost: () => setLives((prev) => prev - 1),
