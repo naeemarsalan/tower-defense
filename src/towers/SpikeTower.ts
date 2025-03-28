@@ -28,8 +28,9 @@ export class SpikeTower extends Tower {
       { ...this.position },
       monster,
       20,
-      0.2,
-      this.bulletSprite
+      this.bulletSprite,
+      62,
+      57
     );
   }
 

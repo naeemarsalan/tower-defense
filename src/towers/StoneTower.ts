@@ -27,8 +27,9 @@ export class StoneTower extends Tower {
       { ...this.position },
       monster,
       10,
-      0.1,
-      this.bulletSprite
+      this.bulletSprite,
+      160,
+      148
     );
   }
 

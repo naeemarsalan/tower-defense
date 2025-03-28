@@ -2,24 +2,28 @@ import { Monster, Position } from "../types";
 import { tileConfig } from "../constants";
 
 export class Bullet {
-  public position: Position;
-  public target: Monster;
-  public damage: number;
-  public speed: number;
-  public sprite: HTMLImageElement;
+  private speed = 0.2;
+  private position: Position;
+  private target: Monster;
+  private damage: number;
+  private sprite: HTMLImageElement;
+  private spriteWidth: number;
+  private spriteHeight: number;
 
   constructor(
     start: Position,
     target: Monster,
     damage: number,
-    speed: number,
-    sprite: HTMLImageElement
+    sprite: HTMLImageElement,
+    spriteWidth: number,
+    spriteHeight: number
   ) {
     this.position = start;
     this.target = target;
     this.sprite = sprite;
     this.damage = damage;
-    this.speed = speed;
+    this.spriteWidth = spriteWidth;
+    this.spriteHeight = spriteHeight;
   }
 
   public update(): boolean {
@@ -47,7 +51,7 @@ export class Bullet {
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;
 
-    // Draw bullet (scaled to 15% of tile size)
+    // Draw bullet (scaled to 20% of tile size)
     const bulletSize = tileConfig.tileSize * 0.2;
 
     // Center the bullet in the tile
@@ -58,8 +62,8 @@ export class Bullet {
       this.sprite,
       0,
       0,
-      62, // Source width
-      57, // Source height
+      this.spriteWidth,
+      this.spriteHeight,
       centeredX,
       centeredY - 22,
       bulletSize,
