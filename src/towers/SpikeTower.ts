@@ -57,6 +57,18 @@ export class SpikeTower extends Tower {
       scaledSize
     );
 
+    const topPosY = this.isPreparingToShoot
+      ? posY + offset + 16 - this.shootingBulletOffset
+      : this.isCooldown
+      ? posY + offset + 16 - this.reloadingBulletOffset
+      : posY + offset + 16;
+
+    const bottomPosY = this.isPreparingToShoot
+      ? posY + offset + 22 - this.shootingBulletOffset
+      : this.isCooldown
+      ? posY + offset + 22 - this.reloadingBulletOffset
+      : posY + offset + 22;
+
     ctx.drawImage(
       this.topSprite,
       0,
@@ -64,9 +76,7 @@ export class SpikeTower extends Tower {
       162,
       186,
       posX + offset,
-      this.isPreparingToShoot
-        ? posY + offset + 16 - this.shootingBulletOffset
-        : posY + offset + 16 - this.reloadingBulletOffset,
+      topPosY,
       scaledSize,
       scaledSize
     );
@@ -78,9 +88,7 @@ export class SpikeTower extends Tower {
       162,
       186,
       posX + offset,
-      this.isPreparingToShoot
-        ? posY + offset + 22 - this.shootingBulletOffset
-        : posY + offset + 22 - this.reloadingBulletOffset,
+      bottomPosY,
       scaledSize,
       scaledSize
     );
@@ -89,7 +97,7 @@ export class SpikeTower extends Tower {
     const bulletSize = tileConfig.tileSize * 0.2;
     const bulletOffset = (tileConfig.tileSize - bulletSize) / 2;
 
-    if (this.isPreparingToShoot) {
+    if (!this.isCooldown) {
       ctx.drawImage(
         this.bulletSprite,
         0,
@@ -106,12 +114,13 @@ export class SpikeTower extends Tower {
     // Draw bullets
     this.bullets.forEach((bullet) => bullet.draw(ctx));
 
-    if (!this.isMonsterInRange) return;
+    if (!this.isPreparingToShoot && !this.isCooldown) return;
 
     if (this.isPreparingToShoot) {
       this.shootingBulletOffset += 0.2 + this.shootingBulletOffset / 16;
       if (this.shootingBulletOffset > 16) {
         this.isPreparingToShoot = false;
+        this.isShooting = true;
         this.shootingBulletOffset = 0;
       }
     }
@@ -127,8 +136,9 @@ export class SpikeTower extends Tower {
   }
 
   public reset() {
-    this.isPreparingToShoot = true;
+    this.isPreparingToShoot = false;
     this.isCooldown = false;
+    this.isShooting = false;
     this.shootingBulletOffset = 0;
     this.reloadingBulletOffset = 16;
   }

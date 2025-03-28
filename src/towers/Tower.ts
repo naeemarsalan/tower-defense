@@ -4,10 +4,9 @@ import { Monster } from "../types";
 import { Bullet } from "../bullet/Bullet";
 
 export abstract class Tower {
-  public isPreparingToShoot = true;
+  public isPreparingToShoot = false;
+  public isShooting = false;
   public isCooldown = false;
-
-  protected isMonsterInRange = false;
 
   public bullets: Bullet[] = [];
 
@@ -31,21 +30,21 @@ export abstract class Tower {
 
     // Check if any part of the monster is within range
     if (distance <= this.range) {
-      this.isMonsterInRange = true;
+      this.isPreparingToShoot = true;
       return true;
     }
 
-    this.isMonsterInRange = false;
     return false;
   }
 
   public attack(monster: Monster): void {
-    if (this.isPreparingToShoot || this.isCooldown) return;
+    if (!this.isShooting) return;
 
     const bullet = this.createBullet(monster);
     this.bullets.push(bullet);
 
     this.isPreparingToShoot = false;
+    this.isShooting = false;
     this.isCooldown = true;
   }
 
