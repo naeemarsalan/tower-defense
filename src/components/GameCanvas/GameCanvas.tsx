@@ -27,7 +27,7 @@ export const GameCanvas = memo(({ mapGrid, setCurrentLevel }: Props) => {
   useGameLoop(game, gameCanvasRef?.current?.getContext("2d"));
 
   const [selectedTowerType, setSelectedTowerType] = useState<TowerType>(
-    TowerType.STONE
+    TowerType.SPIKE
   );
 
   const { addTower } = useAddTower({

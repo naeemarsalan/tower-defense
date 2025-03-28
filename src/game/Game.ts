@@ -109,7 +109,7 @@ export class Game {
   private handleTowerAttacks(): void {
     this.towers.forEach((tower) => {
       this.monsters.forEach((monster) => {
-        if (tower.isMonsterInRange(monster)) {
+        if (tower.checkIsMonsterInRange(monster)) {
           tower.attack(monster);
         }
       });
@@ -177,5 +177,9 @@ export class Game {
     this.spawnedMonsters = 0;
     this.lastSpawnTime = 0;
     this.isPaused = false;
+
+    this.towers.forEach((tower) => {
+      tower.reset();
+    });
   }
 }

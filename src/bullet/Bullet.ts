@@ -48,7 +48,7 @@ export class Bullet {
     const posY = this.position.y * tileConfig.tileSize;
 
     // Draw bullet (scaled to 15% of tile size)
-    const bulletSize = tileConfig.tileSize * 0.15;
+    const bulletSize = tileConfig.tileSize * 0.2;
 
     // Center the bullet in the tile
     const centeredX = posX - bulletSize / 2 + tileConfig.tileSize / 2;
@@ -61,7 +61,7 @@ export class Bullet {
       62, // Source width
       57, // Source height
       centeredX,
-      centeredY,
+      centeredY - 22,
       bulletSize,
       bulletSize
     );
