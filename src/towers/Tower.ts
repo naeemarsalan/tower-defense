@@ -1,6 +1,6 @@
 import { Position } from "../types";
 import { tileConfig } from "../constants";
-import { Monster } from "../types";
+import { Monster } from "../monsters/Monster";
 import { Bullet } from "../bullet/Bullet";
 
 export abstract class Tower {

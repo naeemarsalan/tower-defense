@@ -1,8 +1,9 @@
-import { Monster, Position } from "../types";
+import { Position } from "../types";
 import { Vampire } from "../vampire/Vampire";
 import { Tower } from "../towers/Tower";
 import { Explosion } from "../effects/Explosion";
 import { Level } from "../level/Level";
+import { Monster } from "../monsters/Monster";
 
 export class Game {
   private monsters: Monster[] = [];
@@ -102,7 +103,7 @@ export class Game {
   }
 
   private spawnMonster(): void {
-    const vampire = new Vampire(this.path);
+    const vampire = new Vampire(this.path, 100, 10, 0.025);
     this.monsters.push(vampire);
   }
 

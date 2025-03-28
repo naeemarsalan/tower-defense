@@ -1,8 +1,8 @@
 import { Position } from "../types";
-import { Monster } from "../types";
 import { Bullet } from "../bullet/Bullet";
 import { Tower } from "./Tower";
 import { tileConfig } from "../constants";
+import { Monster } from "../monsters/Monster";
 
 export class SpikeTower extends Tower {
   private shootingBulletOffset = 0;

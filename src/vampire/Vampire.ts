@@ -1,27 +1,32 @@
 import { tileConfig } from "../constants";
-import { Sprite } from "../sprite/Sprite";
-import { Monster, Position } from "../types";
+import { Monster } from "../monsters/Monster";
+import { Position } from "../types";
 
-export class Vampire extends Sprite implements Monster {
-  public spriteFrame = 0; // Start with down direction
-  public pathIndex = -1; // Start outside the map
-  public reward = 10;
+export class Vampire extends Monster {
+  private readonly SPRITE_WIDTH = 64;
+  private readonly SPRITE_HEIGHT = 64;
+  private readonly TOTAL_FRAMES = 6;
 
-  public id: string;
-  public position: Position;
-  public nextPosition: Position;
+  private spriteFrame = 0; // Start with down direction
+  private pathIndex = -1; // Start outside the map
 
-  public health = 100;
-  public speed = 0.025;
-  public tileProgress = 0; // Progress between tiles (0 = at current tile, 1 = at next tile)
+  constructor(
+    public path: Position[],
+    health: number,
+    reward: number,
+    speed: number
+  ) {
+    super(
+      { x: path[0].x, y: path[0].y - 1 }, // Start outside the map
+      { x: path[0].x, y: path[0].y },
+      health,
+      reward,
+      speed,
+      0,
+      new Image()
+    );
 
-  constructor(public path: Position[]) {
-    super();
-    this.id = `vampire-${Date.now()}`;
     this.sprite.src = "/vampire.png";
-
-    this.position = { x: path[0].x, y: path[0].y - 1 }; // Start outside the map
-    this.nextPosition = { x: path[0].x, y: path[0].y };
   }
 
   public draw(ctx: CanvasRenderingContext2D) {
