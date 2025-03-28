@@ -109,9 +109,7 @@ export class Game {
   private handleTowerAttacks(): void {
     this.towers.forEach((tower) => {
       this.monsters.forEach((monster) => {
-        if (tower.checkIsMonsterInRange(monster)) {
-          tower.attack(monster);
-        }
+        tower.attack(monster);
       });
     });
   }

@@ -18,26 +18,13 @@ export abstract class Tower {
   ) {}
 
   protected abstract createBullet(monster: Monster): Bullet;
+  public abstract draw(ctx: CanvasRenderingContext2D): void;
 
   public abstract reset(): void;
 
-  public checkIsMonsterInRange(monster: Monster) {
-    if (!monster.position?.x || !monster.position?.y) return false;
-
-    const dx = this.position.x - monster.getExactPosition().x;
-    const dy = this.position.y - monster.getExactPosition().y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // Check if any part of the monster is within range
-    if (distance <= this.range) {
-      this.isPreparingToShoot = true;
-      return true;
-    }
-
-    return false;
-  }
-
   public attack(monster: Monster): void {
+    if (!this.checkIsMonsterInRange(monster)) return;
+
     if (!this.isShooting) return;
 
     const bullet = this.createBullet(monster);
@@ -47,8 +34,6 @@ export abstract class Tower {
     this.isShooting = false;
     this.isCooldown = true;
   }
-
-  public abstract draw(ctx: CanvasRenderingContext2D): void;
 
   protected drawRangeIndicator(
     ctx: CanvasRenderingContext2D,
@@ -68,5 +53,21 @@ export abstract class Tower {
     ctx.fill();
     ctx.strokeStyle = "rgba(0, 255, 0, 0.3)";
     ctx.stroke();
+  }
+
+  private checkIsMonsterInRange(monster: Monster) {
+    if (!monster.position?.x || !monster.position?.y) return false;
+
+    const dx = this.position.x - monster.getExactPosition().x;
+    const dy = this.position.y - monster.getExactPosition().y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Check if any part of the monster is within range
+    if (distance <= this.range) {
+      this.isPreparingToShoot = true;
+      return true;
+    }
+
+    return false;
   }
 }
