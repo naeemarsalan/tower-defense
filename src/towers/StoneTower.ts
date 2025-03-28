@@ -14,7 +14,7 @@ export class StoneTower extends Tower {
   private bottomSprite = new Image();
 
   constructor(public position: Position) {
-    super(position, new Image(), 1.5, 1);
+    super(position, new Image(), 2, 1);
 
     this.sprite.src = "/towers/stone/base.png";
     this.bulletSprite.src = "/towers/stone/bullet.png";
@@ -93,8 +93,8 @@ export class StoneTower extends Tower {
         this.bulletSprite,
         0,
         0,
-        62,
-        57,
+        160,
+        148,
         posX + bulletOffset,
         posY + offset + 16 - this.shootingBulletOffset,
         bulletSize,
