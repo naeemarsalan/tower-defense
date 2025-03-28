@@ -18,12 +18,6 @@ export abstract class Tower {
 
   protected abstract createBullet(monster: Monster): Bullet;
 
-  protected abstract drawRangeIndicator(
-    ctx: CanvasRenderingContext2D,
-    posX: number,
-    posY: number
-  ): void;
-
   public isMonsterInRange(monster: Monster) {
     if (!monster.position?.x || !monster.position?.y) return false;
 
@@ -70,5 +64,25 @@ export abstract class Tower {
 
     // Draw bullets
     this.bullets.forEach((bullet) => bullet.draw(ctx));
+  }
+
+  protected drawRangeIndicator(
+    ctx: CanvasRenderingContext2D,
+    posX: number,
+    posY: number
+  ) {
+    // Draw range indicator
+    ctx.beginPath();
+    ctx.arc(
+      posX + tileConfig.tileSize / 2,
+      posY + tileConfig.tileSize / 2,
+      tileConfig.tileSize * this.range, // Radius to cover one cell in each direction
+      0,
+      Math.PI * 2
+    );
+    ctx.fillStyle = "rgba(0, 255, 0, 0.1)"; // Semi-transparent green
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0, 255, 0, 0.3)";
+    ctx.stroke();
   }
 }
