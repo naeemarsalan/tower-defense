@@ -12,6 +12,11 @@ import {
 } from "@headlessui/react";
 import { cn } from "../../utils/styles";
 import { TowerType } from "../../towers/TowerFactory";
+import {
+  Battery100Icon,
+  CurrencyDollarIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/outline";
 
 interface Props {
   mapGrid: number[][];
@@ -40,11 +45,18 @@ export const GameCanvas = memo(({ mapGrid, setCurrentLevel }: Props) => {
 
   return (
     <>
-      <div className="absolute top-0 left-[-200px] p-4 bg-slate-700/30 ">
-        <h2>Monsters: {spawnedMonsters}</h2>
-        <h2>Gold: {gold}</h2>
-        <h2>Lives: {lives}</h2>
-        <div className="flex gap-2">
+      <div className="absolute top-0 left-[-200px] p-4 bg-slate-700/30 flex flex-col gap-2">
+        <h2 className="flex items-center gap-2">
+          <UserGroupIcon className="w-6 h-6" />
+          Monsters: {spawnedMonsters}
+        </h2>
+        <h2 className="flex items-center gap-2">
+          <CurrencyDollarIcon className="w-6 h-6" /> Money: {gold}
+        </h2>
+        <h2 className="flex items-center gap-2">
+          <Battery100Icon className="w-6 h-6" /> Lives: {lives}
+        </h2>
+        <div className="flex gap-2 mt-2">
           <img
             src="/towers/stone/base.png"
             alt="Stone Tower"
