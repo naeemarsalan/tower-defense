@@ -1,5 +1,6 @@
-import { Monster, Position } from "../types";
+import { Position } from "../types";
 import { tileConfig } from "../constants";
+import { Monster } from "../monsters/Monster";
 
 export class Bullet {
   private speed = 0.2;
