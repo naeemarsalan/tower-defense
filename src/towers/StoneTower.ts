@@ -9,9 +9,10 @@ export class StoneTower extends Tower {
   private reloadingBulletOffset = 16;
 
   public bullets: Bullet[] = [];
-  public bulletSprite = new Image();
-  private topSprite = new Image();
-  private bottomSprite = new Image();
+
+  private readonly bulletSprite = new Image();
+  private readonly topSprite = new Image();
+  private readonly bottomSprite = new Image();
 
   constructor(public position: Position) {
     super(position, new Image(), 2, 1);
