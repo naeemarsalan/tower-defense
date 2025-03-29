@@ -1,24 +1,18 @@
 import { Position } from "../types";
-import { Sprite } from "../sprite/Sprite";
 import { tileConfig } from "../constants";
 
-export class Explosion extends Sprite {
-  public ready = false;
+export class Explosion {
   public position: Position;
 
-  private currentFrame = 0;
+  private readonly sprite = new Image();
   private readonly frameCount = 8;
   private readonly frameDuration = 60; // milliseconds
+  private currentFrame = 0;
   private lastFrameTime = 0;
 
   constructor(position: Position) {
-    super();
     this.position = position;
     this.sprite.src = "/explosion/1.png"; // First frame
-    this.sprite.onload = () => {
-      this.ready = true;
-    };
-
     this.lastFrameTime = performance.now();
   }
 
@@ -43,8 +37,6 @@ export class Explosion extends Sprite {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
-    if (!this.ready) return;
-
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;
 
