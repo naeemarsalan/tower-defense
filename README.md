@@ -1,54 +1,138 @@
-# React + TypeScript + Vite
+# Tower Defense Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern tower defense game built with React, TypeScript, and Vite. Defend your territory against waves of monsters by strategically placing and upgrading towers.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎮 Interactive tower placement and management
+- 🐉 Multiple monster types with unique behaviors
+- 🏗️ Various tower types with different abilities
+- 💥 Dynamic bullet and effect systems
+- 🎯 Level-based progression system
+- 🎨 Modern UI with Tailwind CSS
 
-## Expanding the ESLint configuration
+## Game Mechanics
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Core Gameplay
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Place towers strategically along the monster's path
+- Defend against waves of monsters trying to reach the end
+- Earn rewards by defeating monsters
+- Manage your resources to build and upgrade towers
+
+### Tower Types
+
+- **Stone Tower**: Basic defensive tower with balanced stats
+- **Spike Tower**: Specialized tower with high damage output
+- Each tower has unique characteristics:
+  - Range of attack
+  - Damage per hit
+  - Attack speed
+  - Cost to build
+  - Visual range indicator
+
+### Monster System
+
+- Monsters follow predefined paths
+- Different monster types with varying:
+  - Health points
+  - Movement speed
+  - Reward value
+  - Visual appearance
+- Monsters can move in four directions (up, down, left, right)
+
+### Combat System
+
+- Towers automatically target monsters within their range
+- Visual indicators show tower attack ranges
+- Bullet system with different projectile types
+- Cooldown periods between attacks
+- Monster health tracking and damage calculation
+
+### Resource Management
+
+- Earn currency by defeating monsters
+- Strategic tower placement to maximize coverage
+- Balance between tower costs and monster rewards
+- Upgrade system for existing towers
+
+## Tech Stack
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Headless UI
+- Hero Icons
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- Yarn package manager
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/tower-defense.git
+cd tower-defense
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+yarn install
 ```
+
+3. Start the development server:
+
+```bash
+yarn dev
+```
+
+4. Open your browser and navigate to `http://localhost:5173`
+
+### Building for Production
+
+To create a production build:
+
+```bash
+yarn build
+```
+
+The built files will be in the `dist` directory.
+
+## Project Structure
+
+```
+src/
+├── assets/         # Game assets (images, sounds)
+├── bullet/         # Bullet system implementation
+├── components/     # Reusable UI components
+├── effects/        # Visual effects
+├── game/          # Core game logic
+├── level/         # Level management
+├── monsters/      # Monster types and behaviors
+├── towers/        # Tower types and behaviors
+├── types/         # TypeScript type definitions
+├── utils/         # Utility functions
+└── vampire/       # Vampire-specific game mechanics
+```
+
+## Development
+
+- `yarn dev` - Start development server
+- `yarn build` - Build for production
+- `yarn lint` - Run ESLint
+- `yarn preview` - Preview production build locally
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
