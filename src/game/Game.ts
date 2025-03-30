@@ -157,7 +157,7 @@ export class Game {
   private drawExplosions(ctx: CanvasRenderingContext2D) {
     // Update and draw explosions
     this.explosions = this.explosions.filter((explosion) => {
-      const isRunning = explosion.update();
+      const isRunning = explosion.runAnimation();
       if (isRunning) {
         explosion.draw(ctx);
       }

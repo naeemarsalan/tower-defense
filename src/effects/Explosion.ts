@@ -3,10 +3,10 @@ import { tileConfig } from "../constants";
 
 export class Explosion {
   public position: Position;
-
   private readonly sprite = new Image();
-  private readonly frameCount = 8;
-  private readonly frameDuration = 60; // milliseconds
+
+  private readonly FRAME_COUNT = 8;
+  private readonly FRAME_DURATION = 60; // milliseconds
   private currentFrame = 0;
   private lastFrameTime = 0;
 
@@ -16,24 +16,24 @@ export class Explosion {
     this.lastFrameTime = performance.now();
   }
 
-  public update(): boolean {
+  public runAnimation(): boolean {
     const currentTime = performance.now();
     const deltaTime = currentTime - this.lastFrameTime;
 
-    // Update frame if enough time has passed
-    if (deltaTime >= this.frameDuration) {
-      this.currentFrame++;
-      this.lastFrameTime = currentTime;
+    // Break early if not enough time has passed
+    if (deltaTime < this.FRAME_DURATION) return true;
 
-      // Load next frame
-      if (this.currentFrame < this.frameCount) {
-        this.sprite.src = `/explosion/${this.currentFrame + 1}.png`;
-      } else {
-        return false;
-      }
+    this.currentFrame++;
+    this.lastFrameTime = currentTime;
+
+    // Load next frame
+    if (this.currentFrame < this.FRAME_COUNT) {
+      this.sprite.src = `/explosion/${this.currentFrame + 1}.png`;
+      return true;
     }
 
-    return true;
+    // Animation is complete
+    return false;
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
