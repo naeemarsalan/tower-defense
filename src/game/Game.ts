@@ -95,8 +95,6 @@ export class Game {
     if (currentTime - this.lastSpawnTime >= this.level.spawnInterval) {
       if (this.monsters.length < this.level.monstersToSpawn) {
         this.spawnMonster();
-        this.spawnedMonsters++;
-        this.eventCallbacks.onMonsterSpawn();
       }
       this.lastSpawnTime = currentTime;
     }
@@ -105,6 +103,8 @@ export class Game {
   private spawnMonster(): void {
     const vampire = new Vampire(this.path, 100, 10, 0.025);
     this.monsters.push(vampire);
+    this.spawnedMonsters++;
+    this.eventCallbacks.onMonsterSpawn();
   }
 
   private handleTowerAttacks(): void {
