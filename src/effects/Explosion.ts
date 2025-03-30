@@ -16,7 +16,10 @@ export class Explosion {
     this.lastFrameTime = performance.now();
   }
 
-  public runAnimation(): boolean {
+  public runAnimation(ctx: CanvasRenderingContext2D): boolean {
+    // Draw the current frame
+    this.draw(ctx);
+
     const currentTime = performance.now();
     const deltaTime = currentTime - this.lastFrameTime;
 
@@ -36,7 +39,7 @@ export class Explosion {
     return false;
   }
 
-  public draw(ctx: CanvasRenderingContext2D): void {
+  private draw(ctx: CanvasRenderingContext2D): void {
     const posX = this.position.x * tileConfig.tileSize;
     const posY = this.position.y * tileConfig.tileSize;
 
