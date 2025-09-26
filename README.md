@@ -177,7 +177,9 @@ curl http://localhost:3001/board
 ```
 
 The response includes a JSON object with a `towers` array describing the latest
-known tower placements (by coordinate and tower type).
+known tower placements (by coordinate and tower type). When the browser client
+loads, it will fetch this endpoint and replay the returned placements so that a
+page refresh remains in sync with the REST server's view of the board.
 
 ## Contributing
 

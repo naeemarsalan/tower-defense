@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Game } from "../../../game/Game";
 import { TowerType } from "../../../towers/TowerFactory";
 
@@ -48,7 +48,82 @@ const resolveSocketUrl = () =>
   import.meta.env.VITE_GAME_SERVER_WS ??
   "ws://localhost:3001";
 
+const resolveHttpUrl = () =>
+  import.meta.env.VITE_COMMANDS_HTTP_URL ??
+  import.meta.env.VITE_GAME_SERVER_HTTP ??
+  "http://localhost:3001";
+
 export const useServerCommands = ({ game, placeTower }: Args) => {
+  const hasSyncedBoardRef = useRef(false);
+
+  useEffect(() => {
+    if (!game) return;
+    if (typeof window === "undefined") return;
+    if (typeof fetch !== "function") return;
+    if (hasSyncedBoardRef.current) return;
+
+    const controller = new AbortController();
+    let cancelled = false;
+
+    const fetchBoardState = async () => {
+      hasSyncedBoardRef.current = true;
+
+      try {
+        const baseUrl = resolveHttpUrl().replace(/\/?$/, "");
+        const response = await fetch(`${baseUrl}/board`, {
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          console.error(
+            "Failed to fetch board state: server responded with",
+            response.status
+          );
+          return;
+        }
+
+        const data: unknown = await response.json();
+        const towersRaw =
+          data && typeof data === "object"
+            ? (data as { towers?: unknown }).towers
+            : undefined;
+        const towers = Array.isArray(towersRaw) ? towersRaw : [];
+
+        towers.forEach((tower) => {
+          if (cancelled) return;
+          if (!tower || typeof tower !== "object") return;
+
+          const { x, y, towerType } = tower as {
+            x?: unknown;
+            y?: unknown;
+            towerType?: unknown;
+          };
+
+          if (typeof x !== "number" || typeof y !== "number") return;
+
+          const parsedTowerType = parseTowerType(towerType);
+          if (!parsedTowerType) return;
+
+          placeTower({ x, y }, parsedTowerType);
+        });
+      } catch (error) {
+        if ((error as { name?: string })?.name === "AbortError") {
+          return;
+        }
+
+        console.error("Failed to fetch board state", error);
+      }
+    };
+
+    fetchBoardState();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [game, placeTower]);
+
   useEffect(() => {
     if (!game) return;
     if (typeof window === "undefined") return;
