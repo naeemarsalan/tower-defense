@@ -129,6 +129,25 @@ src/
 - `yarn lint` - Run ESLint
 - `yarn preview` - Preview production build locally
 
+### Command server for remote placement
+
+The client can subscribe to WebSocket commands to place towers remotely. A
+lightweight broadcaster is included for local testing:
+
+```bash
+yarn command-server
+```
+
+The script listens on `ws://localhost:3001` by default (override with
+`COMMAND_SERVER_PORT`). Each connected client receives whatever payload you
+enter. Either paste raw JSON messages or use the helper syntax:
+
+- `place <x> <y> <towerType>` – shorthand for
+  `{ "type": "place_tower", "position": { "x": x, "y": y }, "towerType": towerType }`
+
+Tower types correspond to the keys exported by
+[`towers/TowerFactory.ts`](src/towers/TowerFactory.ts).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
