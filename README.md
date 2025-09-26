@@ -148,6 +148,27 @@ enter. Either paste raw JSON messages or use the helper syntax:
 Tower types correspond to the keys exported by
 [`towers/TowerFactory.ts`](src/towers/TowerFactory.ts).
 
+For automation or integration tests, you can run a REST wrapper that exposes an
+HTTP endpoint while still broadcasting via WebSocket:
+
+```bash
+yarn command-server-rest
+```
+
+This server listens on both `http://localhost:3001` and `ws://localhost:3001`
+by default (override with `COMMAND_SERVER_PORT`). To place a tower via HTTP,
+send a JSON payload containing the `x`, `y`, and `towerType` fields:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"x":6,"y":4,"towerType":"SPIKE"}' \
+  http://localhost:3001/towers
+```
+
+A successful request responds with `201 Created` and broadcasts the equivalent
+`place_tower` command to all connected WebSocket clients.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
