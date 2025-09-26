@@ -11,6 +11,8 @@ if (Number.isNaN(port)) {
 
 const clients = new Set();
 
+const boardState = createBoardState();
+
 const httpServer = createServer(async (req, res) => {
   if (!req.url) {
     sendJson(res, 400, {
@@ -21,6 +23,11 @@ const httpServer = createServer(async (req, res) => {
   }
 
   const url = new URL(req.url, `http://localhost:${port}`);
+
+  if (req.method === "GET" && url.pathname === "/board") {
+    sendJson(res, 200, boardState.getSnapshot());
+    return;
+  }
 
   if (req.method === "POST" && url.pathname === "/towers") {
     try {
@@ -38,6 +45,7 @@ const httpServer = createServer(async (req, res) => {
         towerType: body.towerType,
       };
 
+      boardState.placeTower(payload.position, payload.towerType);
       broadcast(payload);
       sendJson(res, 201, { status: "ok" });
     } catch (error) {
@@ -66,10 +74,10 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "OPTIONS" && url.pathname === "/towers") {
+  if (req.method === "OPTIONS" && ["/towers", "/board"].includes(url.pathname)) {
     res.statusCode = 204;
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     res.end();
     return;
@@ -199,4 +207,24 @@ function readRequestBody(req) {
       reject(error);
     });
   });
+}
+
+function createBoardState() {
+  const towers = new Map();
+
+  return {
+    placeTower(position, towerType) {
+      const key = `${position.x}:${position.y}`;
+      towers.set(key, {
+        x: position.x,
+        y: position.y,
+        towerType,
+      });
+    },
+    getSnapshot() {
+      return {
+        towers: Array.from(towers.values()),
+      };
+    },
+  };
 }
