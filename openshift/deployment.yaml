@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tower-defense
+  labels:
+    app: tower-defense
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tower-defense
+  template:
+    metadata:
+      labels:
+        app: tower-defense
+    spec:
+      containers:
+        - name: tower-defense
+          image: quay.io/example/tower-defense:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_ENV
+              value: production
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tower-defense
+  labels:
+    app: tower-defense
+spec:
+  selector:
+    app: tower-defense
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: tower-defense
+  labels:
+    app: tower-defense
+spec:
+  to:
+    kind: Service
+    name: tower-defense
+  port:
+    targetPort: http
