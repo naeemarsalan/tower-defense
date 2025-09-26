@@ -169,6 +169,16 @@ curl -X POST \
 A successful request responds with `201 Created` and broadcasts the equivalent
 `place_tower` command to all connected WebSocket clients.
 
+To inspect the current board state tracked by the REST server, send a `GET`
+request to `/board`:
+
+```bash
+curl http://localhost:3001/board
+```
+
+The response includes a JSON object with a `towers` array describing the latest
+known tower placements (by coordinate and tower type).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
