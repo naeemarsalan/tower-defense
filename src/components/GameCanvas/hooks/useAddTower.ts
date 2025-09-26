@@ -7,7 +7,7 @@ interface Args {
   mapGrid: number[][];
   game: Game | null;
   gameCanvasRef: React.RefObject<HTMLCanvasElement | null>;
-  gold: number;
+  goldRef: React.MutableRefObject<number>;
   selectedTowerType: TowerType;
 }
 
@@ -15,9 +15,35 @@ export const useAddTower = ({
   mapGrid,
   game,
   gameCanvasRef,
-  gold,
+  goldRef,
   selectedTowerType,
 }: Args) => {
+  const canPlaceTower = useCallback(
+    ({ x, y }: { x: number; y: number }) =>
+      x >= 0 &&
+      x < tileConfig.mapWidth &&
+      y >= 0 &&
+      y < tileConfig.mapHeight &&
+      mapGrid[y][x] === 0,
+    [mapGrid]
+  );
+
+  const placeTower = useCallback(
+    ({ x, y }: { x: number; y: number }, towerType: TowerType) => {
+      if (!game || !gameCanvasRef.current) return false;
+
+      if (!canPlaceTower({ x, y })) return false;
+
+      game.addTower(
+        TowerFactory.createTower(towerType, { x, y }),
+        goldRef.current
+      );
+
+      return true;
+    },
+    [canPlaceTower, game, gameCanvasRef, goldRef]
+  );
+
   const addTower = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
       if (!game || !gameCanvasRef.current) return false;
@@ -31,24 +57,10 @@ export const useAddTower = ({
       const gridX = Math.floor(x / tileConfig.tileSize);
       const gridY = Math.floor(y / tileConfig.tileSize);
 
-      const position = { x: gridX, y: gridY };
-
-      // Check if the clicked position is within bounds and is a sand tile (0)
-      if (
-        gridX >= 0 &&
-        gridX < tileConfig.mapWidth &&
-        gridY >= 0 &&
-        gridY < tileConfig.mapHeight &&
-        mapGrid[gridY][gridX] === 0
-      ) {
-        game.addTower(
-          TowerFactory.createTower(selectedTowerType, position),
-          gold
-        );
-      }
+      placeTower({ x: gridX, y: gridY }, selectedTowerType);
     },
-    [game, gameCanvasRef, mapGrid, gold, selectedTowerType]
+    [game, gameCanvasRef, placeTower, selectedTowerType]
   );
 
-  return { addTower };
+  return { addTower, placeTower };
 };

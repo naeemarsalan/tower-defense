@@ -1,5 +1,5 @@
 import { tileConfig } from "../../constants";
-import { memo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useGameLoop } from "./hooks/useGameLoop";
 import { useGameInit } from "./hooks/useGameInit";
 import { useAddTower } from "./hooks/useAddTower";
@@ -17,6 +17,7 @@ import {
   CurrencyDollarIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { useServerCommands } from "./hooks/useServerCommands";
 
 interface Props {
   mapGrid: number[][];
@@ -35,12 +36,23 @@ export const GameCanvas = memo(({ mapGrid, setCurrentLevel }: Props) => {
     TowerType.SPIKE
   );
 
-  const { addTower } = useAddTower({
+  const goldRef = useRef(gold);
+
+  useEffect(() => {
+    goldRef.current = gold;
+  }, [gold]);
+
+  const { addTower, placeTower } = useAddTower({
     mapGrid,
     game,
     gameCanvasRef,
-    gold,
+    goldRef,
     selectedTowerType,
+  });
+
+  useServerCommands({
+    game,
+    placeTower,
   });
 
   return (
