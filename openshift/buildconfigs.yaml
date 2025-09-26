@@ -1,0 +1,56 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: tower-defense-backend
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: tower-defense-backend
+spec:
+  source:
+    git:
+      uri: https://github.com/naeemarsalan/tower-defense.git
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Dockerfile.backend   # 👈 use backend dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: tower-defense-backend:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: tower-defense-frontend
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: tower-defense-frontend
+spec:
+  source:
+    git:
+      uri: https://github.com/naeemarsalan/tower-defense.git
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Dockerfile.frontend  # 👈 use frontend dockerfile
+      env:
+        - name: VITE_GAME_SERVER_WS
+          value: wss://tower-defense-backend-anaeem.apps.virt.na-launch.com
+        - name: VITE_GAME_SERVER_HTTP
+          value: https://tower-defense-backend-anaeem.apps.virt.na-launch.com
+  output:
+    to:
+      kind: ImageStreamTag
+      name: tower-defense-frontend:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+

@@ -1,28 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tower-defense
+  name: tower-defense-frontend
   labels:
-    app: tower-defense
+    app: tower-defense-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tower-defense
+      app: tower-defense-frontend
   template:
     metadata:
       labels:
-        app: tower-defense
+        app: tower-defense-frontend
     spec:
       containers:
-        - name: tower-defense
-          image: quay.io/example/tower-defense:latest
+        - name: tower-defense-frontend
+          image: image-registry.openshift-image-registry.svc:5000/anaeem/tower-defense-frontend@sha256:7ac70ec87a1e6fe33be26349262061e0c41c068f737fee23060b1a0243fb42c1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
             - name: NODE_ENV
               value: production
+            - name: VITE_GAME_SERVER_WS
+              value: ws://tower-defense-backend-anaeem.apps.virt.na-launch.com
+            - name: VITE_GAME_SERVER_HTTP
+              value: https://tower-defense-backend-anaeem.apps.virt.na-launch.com
           readinessProbe:
             httpGet:
               path: /
@@ -39,26 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tower-defense
+  name: tower-defense-frontend
   labels:
-    app: tower-defense
+    app: tower-defense-frontend
 spec:
   selector:
-    app: tower-defense
+    app: tower-defense-frontend
   ports:
     - name: http
       port: 80
       targetPort: 8080
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: tower-defense
-  labels:
-    app: tower-defense
-spec:
-  to:
-    kind: Service
-    name: tower-defense
-  port:
-    targetPort: http
