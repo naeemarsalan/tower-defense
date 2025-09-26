@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "command-server": "node scripts/commandServer.mjs",
+    "command-server-rest": "node scripts/restCommandServer.mjs",
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview"
