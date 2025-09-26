@@ -23,13 +23,28 @@ const httpServer = createServer(async (req, res) => {
   }
 
   const url = new URL(req.url, `http://localhost:${port}`);
+  const pathname = normalizePathname(url.pathname);
 
-  if (req.method === "GET" && url.pathname === "/board") {
+  if (req.method === "GET" && pathname === "/") {
+    sendJson(res, 200, {
+      status: "ok",
+      message: "Tower Defense REST command server",
+      endpoints: {
+        board: "/board",
+        placeTower: "/towers",
+      },
+      instructions:
+        "POST a JSON body with x, y, and towerType to /towers (or /) to place a tower.",
+    });
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/board") {
     sendJson(res, 200, boardState.getSnapshot());
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/towers") {
+  if (req.method === "POST" && ["/towers", "/"].includes(pathname)) {
     try {
       const body = await readRequestBody(req);
       const validationError = validateTowerPayload(body);
@@ -74,7 +89,10 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "OPTIONS" && ["/towers", "/board"].includes(url.pathname)) {
+  if (
+    req.method === "OPTIONS" &&
+    ["/towers", "/", "/board"].includes(pathname)
+  ) {
     res.statusCode = 204;
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -151,6 +169,19 @@ function sendJson(res, statusCode, payload) {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.end(JSON.stringify(payload));
+}
+
+function normalizePathname(pathname) {
+  if (!pathname) {
+    return "/";
+  }
+
+  if (pathname === "/") {
+    return pathname;
+  }
+
+  const trimmed = pathname.replace(/\/+$/, "");
+  return trimmed === "" ? "/" : trimmed;
 }
 
 function validateTowerPayload(body) {

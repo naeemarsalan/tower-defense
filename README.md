@@ -166,6 +166,16 @@ curl -X POST \
   http://localhost:3001/towers
 ```
 
+The server also accepts `POST` requests to `/`, which is useful when a
+reverse proxy rewrites the path or when you just want a shorter URL:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"x":1,"y":1,"towerType":"STONE"}' \
+  http://localhost:3001/
+```
+
 A successful request responds with `201 Created` and broadcasts the equivalent
 `place_tower` command to all connected WebSocket clients.
 
