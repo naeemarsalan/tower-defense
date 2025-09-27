@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: tower-defense-backend
-          image: image-registry.openshift-image-registry.svc:5000/anaeem/tower-defense-backend@sha256:9abb55ca0d002962583e9442005df6cb0d6a38152645743f7263253c09457177 
-          imagePullPolicy: IfNotPresent
+          image: image-registry.openshift-image-registry.svc:5000/anaeem/tower-defense-backend:latest
+          imagePullPolicy: Always 
           ports:
             - containerPort:  3001 
           env:
